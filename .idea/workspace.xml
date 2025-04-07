@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="ac216bd4-363d-4f80-ad40-b8714fe7d5e4" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/citas.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ejemploEjecución.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/gestorCitas.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/paciente.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/persona.py" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;mms254&quot;
+  }
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/mms254/prog-grupo-B5.git&quot;,
+    &quot;accountId&quot;: &quot;ac59a8ba-a0cc-4e20-8507-bb10012df903&quot;
+  }
+}</component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 7
+}</component>
+  <component name="ProjectId" id="2t2OFAMcofh0Dp57ofIB2gfWZ2H" />
+  <component name="ProjectViewState">
+    <option name="autoscrollToSource" value="true" />
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "git-widget-placeholder": "Maria",
+    "last_opened_file_path": "C:/Users/Usuario/Documents/prog-grupo-B5",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "preferences.updates",
+    "vue.rearranger.settings.migration": "true"
+  }
+}]]></component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-js-predefined-d6986cc7102b-76f8388c3a79-JavaScript-PY-243.24978.54" />
+        <option value="bundled-python-sdk-91e3b7efe1d4-466328ff949b-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-243.24978.54" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="ac216bd4-363d-4f80-ad40-b8714fe7d5e4" name="Changes" comment="" />
+      <created>1739546596112</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1739546596112</updated>
+      <workItem from="1739546597167" duration="69000" />
+      <workItem from="1739549358943" duration="12000" />
+      <workItem from="1739724029385" duration="14000" />
+      <workItem from="1739821208197" duration="16000" />
+      <workItem from="1740492825605" duration="134000" />
+      <workItem from="1740493112391" duration="352000" />
+      <workItem from="1740495036945" duration="122000" />
+      <workItem from="1740495172428" duration="37000" />
+      <workItem from="1740495345061" duration="8000" />
+      <workItem from="1740746534956" duration="143000" />
+      <workItem from="1740746903306" duration="1279000" />
+      <workItem from="1741350951787" duration="1219000" />
+      <workItem from="1744041702017" duration="4659000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+</project>
