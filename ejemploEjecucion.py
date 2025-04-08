@@ -59,5 +59,20 @@ def main():
     print("\nListado actualizado de citas:")
     gestor.mostrar_citas()
 
+    print("\nAñadiendo nueva cita usando el operador '+='")
+    nueva_cita = CitaPresencial(
+        id_cita = 104,
+        paciente = paciente1,
+        medico = "Dr.Ramírez",
+        fecha = "2025-05-04",
+        hora = "09:30",
+        centro = "Clínica Norte"
+    )
+
+    gestor += nueva_cita
+
+    print("Mostrar citas actualizada:")
+    gestor.mostrar_citas()
+
 
 main()

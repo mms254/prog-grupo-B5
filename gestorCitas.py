@@ -153,8 +153,15 @@ class GestorCitas:
 
             print(f'{cita.id_cita} - {cita.__class__.__name__} - Paciente: {cita.paciente.nombre} - Médico: {cita.medico} - {estado}')
 
+    def __iadd__(self, cita:Cita):
 
+        """
+            Sobrecarga del operador += para añdir una cita al gestor.
+            Permite usar : gestor += cita
+        """
 
+        self.añadir_cita(cita)
+        return self
 
 
 
