@@ -18,3 +18,11 @@ class Cita(ABC):
         self.atendido = True
         self.estado = 'completado'
         return self.atendido
+
+    def to_dict(self):
+        return {
+            "paciente_username": self.paciente_username,
+            "medico_username": self.medico_username,
+            "fecha_hora": self.fecha_hora,
+            "motivo": self.motivo
+        }
