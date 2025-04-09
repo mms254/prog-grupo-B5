@@ -1,15 +1,17 @@
 class Ambulancia:
     cantidad = 0
-    def __init__(self, matricula, zona, cantidad_paramedicos, modelo, sirena, paramedicos):
+    def __init__(self, matricula, zona, modelo, sirena):
         self.matricula = matricula
         self.zona = zona
         self.modelo = modelo
-        self.cantidad_paramedicos = cantidad_paramedicos
         if sirena not in ['bitonal', 'secuencial']:
             raise ValueError('Ese tono de sirena no existe en esa base de datis, por favor, prueba otra vez con bitonal o secuencial')
         self.sirena = sirena
         self.paramedicos = []
         Ambulancia.cantidad +=1
+    @classmethod
+    def cantidad_ambulancias(cls):
+        return cls.cantidad
 
     def agregar_paramedico(self, paramedico):
         if paramedico in self.paramedicos:
@@ -21,11 +23,13 @@ class Ambulancia:
     def recoger_paciente(self, paciente):
         self.paciente = paciente
         if self.paciente.estado.lower() == 'urgente':
-            velmax = 200
+            return 200
         if self.paciente.estado.lower() == 'grave':
-            velmax = 150
+            return 150
         if self.paciente.estado.lower() == 'leve':
-            velmax = 90
+            return 90
         else:
-            velmax = 0
-        return velmax
+            return 0
+
+    def __str__(self):
+        return f'Ambulancia {self.matricula} - Zona: {self.zona} - Modelo: {self.modelo} - Sirena: {self.sirena}'

@@ -4,12 +4,8 @@ class Documento:
         self.descripcion = descripcion
         self.urgente = False
         self.prioridad = 0
-
-    def validar_documento(self):
         if not self.titulo or not self.descripcion:
             raise ValueError('El documento no es valido, ingrese un documento con contenido de titulo y descripcion')
-        else:
-            return True
 
     def marcar_urgente (self):
         self.urgente = True
@@ -20,4 +16,5 @@ class Documento:
         if self.urgente:
             self.prioridad = 1
         else:
-            self.proridad = 0
+            self.prioridad = 0
+        return self.prioridad
