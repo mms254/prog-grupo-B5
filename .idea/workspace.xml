@@ -5,9 +5,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="ac216bd4-363d-4f80-ad40-b8714fe7d5e4" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/asignacion.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ejecucion2.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/medico.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/trabajador.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ejemploEjecucion.py" beforeDir="false" afterPath="$PROJECT_DIR$/ejemploEjecucion.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gestorCitas.py" beforeDir="false" afterPath="$PROJECT_DIR$/gestorCitas.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -48,22 +50,25 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;Maria&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/Usuario/Documents/prog-grupo-B5&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.updates&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Python.asignacion.executor": "Run",
+    "Python.ejecucion2.executor": "Run",
+    "Python.paciente.executor": "Run",
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "git-widget-placeholder": "Maria",
+    "last_opened_file_path": "C:/Users/Usuario/Documents/prog-grupo-B5",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "preferences.updates",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
@@ -93,11 +98,17 @@
       <workItem from="1740746903306" duration="1279000" />
       <workItem from="1741350951787" duration="1219000" />
       <workItem from="1744041702017" duration="5043000" />
-      <workItem from="1744135667559" duration="958000" />
+      <workItem from="1744135667559" duration="1955000" />
+      <workItem from="1744184059382" duration="7227000" />
     </task>
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="com.intellij.coverage.CoverageDataManagerImpl">
+    <SUITE FILE_PATH="coverage/prog_grupo_B5$asignacion.coverage" NAME="asignacion Coverage Results" MODIFIED="1744207941034" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/prog_grupo_B5$ejecucion2.coverage" NAME="ejecucion2 Coverage Results" MODIFIED="1744209930222" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/prog_grupo_B5$paciente.coverage" NAME="paciente Coverage Results" MODIFIED="1744208194825" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>
