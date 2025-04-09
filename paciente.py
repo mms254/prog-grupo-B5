@@ -1,13 +1,15 @@
 from persona import Persona
-
+from citas import Cita
 class Paciente(Persona):
-    def __init__(self, id, nombre, apellido, edad, genero, estado, medico_asignado=None, habitacion_asginada = None):
-        super().__init__(id, nombre, apellido, edad, genero)
+    def __init__(self, id, nombre, apellido, edad, genero, estado, medico_asignado=None, habitacion_asginada = None, historial_medico: List[str] = None):
+        super().__init__(id, nombre, apellido, edad, genero, 'paciente')
         self.estado = estado
         self.medico_asignado = medico_asignado
         self.habitacion_asginada = habitacion_asginada
         self.enfermedades = []
         self.prioridad_urgencias = 0
+        self.historial_medico = historial_medico if historial_medico is not None else []
+        self.citas: List[Cita] = []
     def asignar_medico(self, medico):
         self.medico_asignado = medico
         return f'El médico/a {medico.nombre} se ha asignado al paciente {self.nombre}'
