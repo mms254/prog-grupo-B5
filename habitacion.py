@@ -1,3 +1,6 @@
+from paciente import paciente10
+from paciente import paciente11
+from paciente import paciente5
 class Habitacion:
     def __init__(self, numero_habitacion, capacidad, limpia=False):
         self.numero_habitacion = numero_habitacion
@@ -5,9 +8,12 @@ class Habitacion:
         self.limpia = limpia
         self.pacientes = []
         self.historial_pacientes= []
+        self.pacientes_info = []
 
     def obtener_info(self):
-        info = f'Habitacion: {self.numero_habitacion} - Limpia: {self.limpia} - Capacidad: {self.capacidad} - Pacientes asignados: {self.pacientes} - Cantidad de pacientes: {len(self.pacientes)}'
+        for paciente in self.pacientes:
+            self.pacientes_info.append(str(paciente.nombre))
+        info = f'Habitacion: {self.numero_habitacion} - Limpia: {self.limpia} - Capacidad: {self.capacidad} - Pacientes asignados: {self.pacientes_info} - Cantidad de pacientes: {len(self.pacientes)}'
         return info
     def __len__(self):
         return len(self.pacientes)
@@ -34,3 +40,15 @@ class Habitacion:
             print(f'Paciente {paciente.nombre} eliminado de la habitación {self.numero_habitacion}.')
         else:
             print(f'Paciente {paciente.nombre} no está en la habitación {self.numero_habitacion}.')
+
+habitacion1 = Habitacion(99, 4)
+habitacion2 = Habitacion(54, 1)
+habitacion3 = Habitacion(109, 2)
+habitacion4 = Habitacion(90, 3)
+habitacion5 = Habitacion(190, 10)
+
+habitacion2.limpiar()
+habitacion4.añadir_pacientes(paciente11)
+habitacion4.añadir_pacientes(paciente10)
+print(habitacion4.obtener_info())
+habitacion4.eliminar_paciente(paciente10)
