@@ -61,3 +61,114 @@ def obtener_informacion(medicamento: str) -> None:
         print(f'No se puede completar su solicitud: {error}')
 
 #Aquí para el menú hay que poner solicitar un medicamento.
+from flask import Flask, request, jsonify
+import uuid
+
+app = Flask(__name__)
+
+# Simulación de base de datos en memoria para almacenar los SIPs de los pacientes
+sips = {}
+
+
+def generar_sip(paciente_id: str) -> str:
+    '''Genera un SIP único para el paciente.
+
+    Parámetros
+    ----------
+    paciente_id : str
+        Identificador único del paciente para el que se generará el SIP.
+
+    Devuelve
+    --------
+    str
+        SIP generado en formato único 'SIP-<código_hexadecimal>'.
+        El código hexadecimal es generado a partir de un UUID, limitado a 10 caracteres y en mayúsculas.
+
+    Ejemplo
+    -------
+    Si paciente_id es 'P001', el SIP generado podría ser 'SIP-ABC123XYZ'.
+    '''
+    sip = f'SIP-{uuid.uuid4().hex[:10].upper()}'  # Genera el SIP con uuid version 4, para que el SIP sea único y tenga 10 caracteres
+    sips[paciente_id] = sip
+    return sip
+
+
+@app.route('/')
+def bienvenida():
+    '''Ruta principal que da la bienvenida al sistema y proporciona instrucciones básicas.
+
+    Devuelve
+    --------
+    jsonify
+        Un mensaje de bienvenida con instrucciones sobre cómo usar el sistema.
+
+    Ejemplo
+    -------
+    { 'mensaje': 'Bienvenido/a al sistema generador de SIPs. Modifica el enlace añadiendo /crear_sip/tu_id_de_paciente para generar tu SIP y usa /consultar_sip/tu_id_de_paciente para consultar el SIP.' }
+    '''
+    return jsonify({
+        'mensaje': 'Bienvenido/a al sistema generador de SIPs. '
+                   'Modifica el enlace añadiendo /crear_sip/tu_id_de_paciente para generar tu SIP '
+                   'y usa /consultar_sip/tu_id_de_paciente para consultar el SIP.'
+    })
+
+
+@app.route('/crear_sip/<paciente_id>', methods=['GET'])
+def crear_sip(paciente_id: str):
+    '''Crea un SIP para el paciente especificado por su ID.
+
+    Parámetros
+    ----------
+    paciente_id : str
+        El identificador del paciente para el que se generará el SIP.
+
+    Devuelve
+    --------
+    jsonify
+        Un mensaje confirmando la creación del SIP o informando que el paciente ya tiene uno asignado.
+
+    Ejemplo
+    -------
+    Si el paciente no tiene un SIP asignado, la respuesta será:
+    { 'mensaje': 'SIP creado correctamente', 'sip': 'SIP-ABC123XYZ' }
+
+    Si el paciente ya tiene un SIP asignado, la respuesta será:
+    { 'mensaje': 'El paciente ya tiene un SIP asignado', 'sip': 'SIP-ABC123XYZ' }
+    '''
+    if paciente_id in sips:
+        return jsonify({'mensaje': 'El paciente ya tiene un SIP asignado', 'sip': sips[paciente_id]}), 400
+    sip = generar_sip(paciente_id)  # Se genera el SIP utilizando la función generar_sip
+    return jsonify({'mensaje': 'SIP creado correctamente', 'sip': sip})
+
+
+@app.route('/consultar_sip/<paciente_id>', methods=['GET'])
+def consultar_sip(paciente_id: str):
+    '''Consulta el SIP asignado a un paciente por su ID.
+
+    Parámetros
+    ----------
+    paciente_id : str
+        El identificador del paciente cuyo SIP se quiere consultar.
+
+    Devuelve
+    --------
+    jsonify
+        El SIP del paciente si existe, o un mensaje de error si no se encuentra.
+
+    Ejemplo
+    -------
+    Si el paciente tiene un SIP asignado, la respuesta será:
+    { 'paciente_id': 'P001', 'sip': 'SIP-ABC123XYZ' }
+
+    Si no se encuentra un SIP para el paciente, la respuesta será:
+    { 'mensaje': 'No se encontró el SIP para ese paciente' }
+    '''
+    sip = sips.get(paciente_id)  # Recupera el SIP del paciente por su ID
+    if sip:
+        return jsonify({'paciente_id': paciente_id, 'sip': sip})  # Devuelve el SIP del paciente
+    return jsonify(
+        {'mensaje': 'No se encontró el SIP para ese paciente'}), 404  # Si no existe el SIP, devuelve un error
+
+
+if __name__ == '__main__':
+    app.run(debug=True)
