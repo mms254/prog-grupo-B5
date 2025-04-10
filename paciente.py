@@ -41,3 +41,20 @@ class Paciente(Persona):
             self.enfermedades.append(enfermedad)
         else:
             print('El paciente ya tiene esa enfermedad')
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "username": self.username,
+            "password": self.password,
+            "nombre": self.nombre,
+            "edad": self.edad,
+            "historial_medico": self.historial_medico,
+            "citas": [cita.to_dict() for cita in self.citas],
+            "rol": self.rol,
+            "medico_asignado": self.medico_asignado,
+            "prioridad_urgencias": self.prioridad_urgencias,
+            "habitacion_asginada": self.habitacion_asginada,
+            "estado": self.estado,
+            "enfermero_asignado": self.enfermero_asignado.id if self.enfermero_asignado else None
+        }
