@@ -25,8 +25,10 @@ class Medico(Trabajador):
         Salario ajustado en base a antigüedad y turno.
     '''
 
-    def __init__(self, id: str, username: str, password: str, nombre: str, apellido: str, edad: int, genero: str, turno: str, horas: int, salario: float,especialidad: str,antiguedad: int):
-        '''
+def __init__(self, id: str, username: str, password: str, nombre: str, apellido: str, edad: int, genero: str,
+                 turno: str, horas: int, salario: float, especialidad: str, antiguedad: int, contratacion=None):
+
+    '''
         Inicializa un objeto Medico con los datos proporcionados y ajusta el salario según la experiencia.
 
         Parámetros
@@ -60,18 +62,22 @@ class Medico(Trabajador):
         -----------
         ValueError
             Si el ID no comienza por 'MED'.
-        '''
-        super().__init__(id, nombre, apellido, edad, genero, turno, horas, salario)
-        self.username = username
-        self.password = password
-        self.especialidad = especialidad
-        self.antiguedad = antiguedad
-        self.pacientes_asignados = []
-        self.salario = self.calculo_salario()
-        if not id.startswith('MED'):
-            raise ValueError('ID inválido, el ID debe empezar por MED')
+    '''
 
-    def calculo_salario(self) -> float:
+
+
+    super().__init__(id, nombre, apellido, edad, genero, turno, contratacion, horas, salario)
+
+    self.username = username
+    self.password = password
+    self.especialidad = especialidad
+    self.antiguedad = antiguedad
+    self.pacientes_asignados = []
+    self.salario = self.calculo_salario()
+    if not id.startswith('MED'):
+        raise ValueError('ID inválido, el ID debe empezar por MED')
+
+def calculo_salario(self) -> float:
         '''
         Calcula el salario ajustado del médico en base a su antigüedad y turno.
 
@@ -93,7 +99,7 @@ class Medico(Trabajador):
             nuevo_salario = nuevo_salario * 0.2 + nuevo_salario
         return nuevo_salario
 
-    def asignar_paciente(self, paciente: object) -> None:
+def asignar_paciente(self, paciente: object) -> None:
         '''
         Asigna un paciente al médico si no está ya asignado.
 
@@ -108,7 +114,7 @@ class Medico(Trabajador):
             self.pacientes_asignados.append(paciente)
             print(f'Paciente {paciente.nombre} asignado al médico {self.nombre}.')
 
-    def obtener_historial_pacientes(self, paciente: object) -> list:
+def obtener_historial_pacientes(self, paciente: object) -> list:
         '''
         Obtiene la lista de pacientes asignados al médico.
 
@@ -130,7 +136,7 @@ class Medico(Trabajador):
                 historial_pacientes.append(paciente)
             return historial_pacientes
 
-    def to_dict(self) -> dict:
+def to_dict(self) -> dict:
         '''
         Convierte la información del médico en un diccionario.
 
@@ -156,7 +162,7 @@ class Medico(Trabajador):
             'salario': self.salario
         }
 
-    def __str__(self) -> str:
+def __str__(self) -> str:
         '''
         Devuelve una representación en texto del objeto médico.
 
@@ -257,3 +263,4 @@ medico1.asignar_paciente(paciente6)
 medico5.asignar_paciente(paciente1)
 
 print(medico1.obtener_historial_pacientes(paciente10))
+

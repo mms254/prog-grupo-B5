@@ -1,3 +1,4 @@
+# enfermero.py
 from trabajador import Trabajador
 from paciente import paciente1
 from paciente import paciente2
@@ -6,6 +7,7 @@ class Enfermero(Trabajador):
     '''
     Clase que representa a un enfermero del sistema hospitalario. Hereda de la clase Trabajador y añade
     atributos y comportamientos específicos como especialidad, antigüedad, cálculo de salario y gestión de pacientes.
+
 
     Parámetros
     ----------
@@ -46,6 +48,7 @@ class Enfermero(Trabajador):
         super().__init__(id, nombre, apellido, edad, genero, turno, horas, salario)
         self.especialidad = especialidad
         self.antiguedad = antiguedad
+        self.salario = self.calculo_salario()
         self.auxiliar_asignado = None
         self.pacientes_asignados = []
         self.username = username
@@ -55,9 +58,25 @@ class Enfermero(Trabajador):
         if not id.startswith('ENF'):
             raise ValueError('ID inválido, el ID debe empezar por ENF')
 
-        self.salario = self.calculo_salario()
 
-    def calculo_salario(self) -> float:
+    def calculo_salario(self):
+        nuevo_salario = self.salario
+        if self.antiguedad <= 2:
+            nuevo_salario = self.salario
+        elif 2 < self.antiguedad <= 7:
+            nuevo_salario = 0.15 * self.salario + self.salario
+        elif 7 < self.antiguedad <= 12:
+            nuevo_salario = 0.2 * self.salario + self.salario
+        elif self.antiguedad > 12:
+            nuevo_salario = self.salario * 0.3 + self.salario
+        if self.turno.lower() == 'noche':
+            nuevo_salario = nuevo_salario * 0.15 + nuevo_salario
+        return nuevo_salario
+
+def asignar_auxiliar(self, auxiliar):
+        self.auxiliar_asignado = auxiliar
+
+def calculo_salario(self) -> float:
         '''
         Calcula el salario final del enfermero en función de la antigüedad y el turno.
 
@@ -79,7 +98,7 @@ class Enfermero(Trabajador):
             nuevo_salario = nuevo_salario * 0.15 + nuevo_salario
         return nuevo_salario
 
-    def asignar_paciente(self, paciente) -> None:
+def asignar_paciente(self, paciente) -> None:
         '''
         Asigna un paciente al enfermero si aún no tiene uno asignado.
 
@@ -98,7 +117,8 @@ class Enfermero(Trabajador):
         self.pacientes_asignados.append(paciente)
         paciente.asignar_enfermero(self)
 
-    def mostrar_pacientes(self) -> str:
+
+def mostrar_pacientes(self) -> str:
         '''
         Genera una cadena con la información de los pacientes asignados al enfermero.
 
@@ -107,15 +127,18 @@ class Enfermero(Trabajador):
         str
             Lista formateada de pacientes o un mensaje indicando que no hay pacientes asignados.
         '''
-        if not self.pacientes_asignados:
-            return 'No hay pacientes asignados'
-        else:
-            pacientes_info = 'Pacientes asignados: '
-            for paciente in self.pacientes_asignados:
-                pacientes_info += f'Nombre: {paciente.nombre} - Apellido: {paciente.apellido} - ID: {paciente.id}, '
-            return pacientes_info.rstrip(', ')
 
-    def to_dict(self) -> dict:
+def mostrar_pacientes(self):
+    if not self.pacientes_asignados:
+        return 'No hay pacientes asignados'
+    else:
+        pacientes_info = 'Pacientes asignados: '
+        for paciente in self.pacientes_asignados:
+            pacientes_info += f'Nombre: {paciente.nombre} - Apellido: {paciente.apellido} - ID: {paciente.id}, '
+        return pacientes_info.rstrip(', ')
+
+
+def to_dict(self) -> dict:
         '''
         Convierte el objeto Enfermero a un diccionario con sus atributos principales.
 
@@ -141,7 +164,7 @@ class Enfermero(Trabajador):
             'pacientes_asignados': [paciente.id for paciente in self.pacientes_asignados]
         }
 
-    def __str__(self) -> str:
+def __str__(self) -> str:
         '''
         Representación en forma de cadena del enfermero.
 
@@ -234,3 +257,4 @@ enfermero2.asignar_paciente(paciente2)
 enfermero2.asignar_paciente(paciente1)
 
 print(enfermero2.mostrar_pacientes())
+

@@ -20,7 +20,7 @@ class Persona:
     __str__(): Devuelve una cadena con la información básica de la persona.
     '''
 
-    def __init__(self, id: str, nombre: str, apellido: str, edad: int, genero: str, rol: str, password: str):
+def __init__(self, id: str, nombre: str, apellido: str, edad: int, genero: str, rol: str, password: str):
         '''
         Inicializa una nueva instancia de la clase Persona.
 
@@ -33,6 +33,7 @@ class Persona:
         rol (str): Rol o puesto que ocupa la persona (por ejemplo, 'paciente', 'médico').
         password (str): Contraseña de la persona. Se guardará como hash.
         '''
+
         self.id = id
         self.nombre = nombre
         self.apellido = apellido
@@ -41,7 +42,7 @@ class Persona:
         self.password_hash = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
         self.rol = rol
 
-    def a_diccionario(self) -> dict:
+def a_diccionario(self) -> dict:
         '''
         Convierte los atributos básicos de la persona en un diccionario.
 
@@ -56,7 +57,8 @@ class Persona:
             'genero': self.genero
         }
 
-    def verificar_password(self, password: str) -> bool:
+def verificar_password(self, password: str) -> bool:
+
         '''
         Verifica si la contraseña proporcionada coincide con el hash guardado.
 
@@ -68,13 +70,14 @@ class Persona:
         '''
         return bcrypt.checkpw(password.encode('utf-8'), self.password_hash)
 
-    def __str__(self) -> str:
+def __str__(self) -> str:
         '''
         Devuelve una representación en cadena de la persona.
 
         Devuelve:
         str: Una cadena con la información básica de la persona.
         '''
+
         return(f'ID: {self.id} - Nombre: {self.nombre} - Apellido {self.apellido} - Edad {self.edad} - Género {self.genero}')
 
 # Creación de objetos de la clase Persona

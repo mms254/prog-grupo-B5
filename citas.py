@@ -130,3 +130,4 @@ class Cita(ABC):
             'atendido': self.atendido
         }
 #Como cita es una clase abstracta, no se pueden crear objetos
+

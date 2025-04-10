@@ -1,9 +1,13 @@
 from typing import List
+
 from persona import Persona
 from citas import Cita
 
 
+from persona import Persona
+from citas import Cita
 class Paciente(Persona):
+
     '''
     Clase que representa a un paciente en el sistema de gestión hospitalaria.
 
@@ -64,21 +68,21 @@ class Paciente(Persona):
         Devuelve un diccionario con los atributos del paciente.
     '''
 
-    def __init__(self, id, username, password, nombre, apellido, edad, genero, estado, medico_asignado=None,
-                 enfermero_asignado=None, habitacion_asginada=None, historial_medico: List[str] = None):
-        super().__init__(id, nombre, apellido, edad, genero)
-        self.username = username
-        self.password = password
-        self.estado = estado
-        self.medico_asignado = medico_asignado
-        self.enfermero_asignado = enfermero_asignado
-        self.habitacion_asginada = habitacion_asginada
-        self.enfermedades = []
-        self.prioridad_urgencias = 0
-        self.historial_medico = historial_medico if historial_medico is not None else []
-        self.citas: List[Cita] = []
+def __init__(self, id,username, password, nombre, apellido, edad, genero, estado, medico_asignado=None, enfermero_asignado = None, habitacion_asginada = None, historial_medico: List[str] = None):
+    super().__init__(id, nombre, apellido, edad, genero, 'paciente')
 
-    def asignar_medico(self, medico):
+    self.username = username
+    self.password = password
+    self.estado = estado
+    self.medico_asignado = medico_asignado
+    self.enfermero_asignado = enfermero_asignado
+    self.habitacion_asginada = habitacion_asginada
+    self.enfermedades = []
+    self.prioridad_urgencias = 0
+    self.historial_medico = historial_medico if historial_medico is not None else []
+    self.citas: List[Cita] = []
+
+def asignar_medico(self, medico):
         '''
         Asigna un médico al paciente y devuelve un mensaje confirmando la asignación.
 
@@ -95,7 +99,7 @@ class Paciente(Persona):
         self.medico_asignado = medico
         return f'El médico/a {medico.nombre} se ha asignado al paciente {self.nombre}'
 
-    def asignar_habitacion(self, habitacion):
+def asignar_habitacion(self, habitacion):
         '''
         Asigna una habitación al paciente y devuelve un mensaje confirmando la asignación.
 
@@ -112,7 +116,7 @@ class Paciente(Persona):
         self.habitacion_asginada = habitacion
         return f'Al paciente {self.nombre} se le ha asignado la habitación {habitacion.numero_habitacion}'
 
-    def asignar_enfermero(self, enfermero):
+def asignar_enfermero(self, enfermero):
         '''
         Asigna un enfermero al paciente y devuelve un mensaje confirmando la asignación.
 
@@ -129,7 +133,7 @@ class Paciente(Persona):
         self.enfermero_asignado = enfermero
         return f'Al paciente {self.nombre} se le ha asignado el enfermero/a {enfermero.nombre}'
 
-    def cambiar_estado(self, nuevo_estado):
+def cambiar_estado(self, nuevo_estado):
         '''
         Cambia el estado del paciente a un nuevo valor (grave, moderado, leve).
 
@@ -140,7 +144,7 @@ class Paciente(Persona):
         '''
         self.estado = nuevo_estado
 
-    def prioridad_urgencias(self):
+def prioridad_urgencias(self):
         '''
         Establece la prioridad del paciente en urgencias según su estado (grave, moderado, leve).
 
@@ -159,7 +163,7 @@ class Paciente(Persona):
             self.prioridad_urgencias = 3
             print(f'El paciente {self.nombre} tiene prioridad baja en urgencias.')
 
-    def asignar_enfermedades(self, enfermedad):
+def asignar_enfermedades(self, enfermedad):
         '''
         Asigna una enfermedad al paciente si no está ya registrada en su historial.
 
@@ -178,7 +182,7 @@ class Paciente(Persona):
         else:
             print('El paciente ya tiene esa enfermedad')
 
-    def to_dict(self): # Hecho por Ricardo
+def to_dict(self): # Hecho por Ricardo
         '''
         Devuelve un diccionario con los atributos del paciente.
 
