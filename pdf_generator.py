@@ -6,7 +6,7 @@ from paciente import Paciente  # Importamos la clase Paciente para tipado
 
 def generar_pdf_paciente(paciente: Paciente) -> str:
 
-    nombre_archivo = f"Informe del Paciente_{paciente.id, paciente.nombre, paciente.apellido}.pdf"
+    nombre_archivo = f"Informe del Paciente_{paciente.id, paciente.username}.pdf"
     c = canvas.Canvas(nombre_archivo, pagesize=letter)
     width, height = letter
 
