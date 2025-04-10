@@ -71,6 +71,7 @@ class Asignaciones:
         self.asignaciones[paciente.id] = medico.id
 
         print(f"Paciente {paciente.nombre} ha sido asignado al médico {medico.nombre}")
+        return True
 
 
     def mostrar_asignaciones(self) -> None:
