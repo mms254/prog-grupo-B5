@@ -1,59 +1,42 @@
 from trabajador import Trabajador
-from paciente import paciente1, paciente10, paciente6
+from paciente import paciente10, paciente6, paciente1
+
 class Medico(Trabajador):
     '''
-    Clase que representa a un médico, que hereda de la clase `Trabajador`, y que incluye atributos y métodos específicos
-    para gestionar pacientes asignados y calcular el salario en función de la antigüedad y turno.
+    Representa a un médico del sistema sanitario.
+
+    Hereda de
+    ---------
+    Trabajador
 
     Atributos
     ---------
-    id : str
-        Identificador único del médico. Debe comenzar con "MED".
-    nombre : str
-        Nombre del médico.
-    apellido : str
-        Apellido del médico.
-    edad : int
-        Edad del médico.
-    genero : str
-        Género del médico.
-    turno : str
-        El turno en el que trabaja el médico (ej. "día" o "noche").
-    horas : int
-        Número de horas trabajadas por el médico.
-    salario : float
-        Salario base del médico.
+    username : str
+        Nombre de usuario para el acceso del médico.
+    password : str
+        Contraseña asociada al usuario.
     especialidad : str
-        Especialidad del médico.
-    disponibilidad : bool
-        Disponibilidad del medico
+        Área médica en la que está especializado el médico.
     antiguedad : int
         Años de experiencia del médico.
     pacientes_asignados : list
-        Lista de pacientes asignados al médico.
-
-    Métodos
-    -------
-    __init__(id: str, nombre: str, apellido: str, edad: int, genero: str, turno: str, horas: int, salario: float, especialidad: str, antiguedad: int)
-        Inicializa los atributos del médico, con validación del ID y cálculo del salario.
-    calculo_salario() -> float
-        Calcula el salario del médico en función de la antigüedad y el turno de trabajo.
-    asignar_paciente(paciente: Paciente) -> None
-        Asigna un paciente al médico, si no está ya asignado.
-    obtener_historial_pacientes() -> list
-        Devuelve una lista con los pacientes asignados al médico.
-    __str__() -> str
-        Devuelve una cadena con la información del médico en formato legible.
+        Lista de objetos de tipo Paciente asignados a este médico.
+    salario : float
+        Salario ajustado en base a antigüedad y turno.
     '''
 
-    def __init__(self, id: str, nombre: str, apellido: str, edad: int, genero: str, turno: str, horas: int, salario: float, especialidad: str, antiguedad: int):
+    def __init__(self, id: str, username: str, password: str, nombre: str, apellido: str, edad: int, genero: str, turno: str, horas: int, salario: float,especialidad: str,antiguedad: int):
         '''
-        Inicializa los atributos del médico, con validación del ID y cálculo del salario.
+        Inicializa un objeto Medico con los datos proporcionados y ajusta el salario según la experiencia.
 
         Parámetros
         ----------
         id : str
-            Identificador único del médico. Debe comenzar con "MED".
+            Identificador único del médico, debe comenzar por 'MED'.
+        username : str
+            Nombre de usuario para el acceso del médico.
+        password : str
+            Contraseña de acceso.
         nombre : str
             Nombre del médico.
         apellido : str
@@ -63,66 +46,61 @@ class Medico(Trabajador):
         genero : str
             Género del médico.
         turno : str
-            Turno de trabajo del médico (ej. "noche" o "día").
+            Turno de trabajo ('mañana', 'tarde', 'noche').
         horas : int
-            Número de horas trabajadas.
+            Número de horas trabajadas semanalmente.
         salario : float
             Salario base del médico.
-        disponibilidad : bool
-            Disponibilidad del medico.
         especialidad : str
-            Especialidad del médico.
+            Especialidad médica del profesional.
         antiguedad : int
-            Antigüedad (años de experiencia del médico).
+            Años de experiencia laboral en el sector.
 
         Excepciones
-        ------------
+        -----------
         ValueError
-            Si el ID no empieza con "MED".
+            Si el ID no comienza por 'MED'.
         '''
         super().__init__(id, nombre, apellido, edad, genero, turno, horas, salario)
+        self.username = username
+        self.password = password
         self.especialidad = especialidad
         self.antiguedad = antiguedad
         self.pacientes_asignados = []
         self.salario = self.calculo_salario()
-        self.disponibilidad = True
         if not id.startswith('MED'):
             raise ValueError('ID inválido, el ID debe empezar por MED')
 
     def calculo_salario(self) -> float:
         '''
-        Calcula el salario del médico en función de la antigüedad y el turno de trabajo.
+        Calcula el salario ajustado del médico en base a su antigüedad y turno.
 
         Devuelve
-        -------
+        --------
         float
-            El salario calculado del médico.
+            Salario ajustado del médico.
         '''
         nuevo_salario = self.salario
         if self.antiguedad <= 1:
             nuevo_salario = self.salario
-        elif self.antiguedad > 1 and self.antiguedad <= 5:
+        elif self.antiguedad <= 5:
             nuevo_salario = 0.2 * self.salario + self.salario
-        elif self.antiguedad > 5 and self.antiguedad <= 10:
+        elif self.antiguedad <= 10:
             nuevo_salario = 0.3 * self.salario + self.salario
-        elif self.antiguedad > 10:
-            nuevo_salario = self.salario * 0.5 + self.salario
+        else:
+            nuevo_salario = 0.5 * self.salario + self.salario
         if self.turno.lower() == 'noche':
             nuevo_salario = nuevo_salario * 0.2 + nuevo_salario
         return nuevo_salario
 
-    def asignar_paciente(self, paciente) -> None:
+    def asignar_paciente(self, paciente: object) -> None:
         '''
-        Asigna un paciente al médico, si no está ya asignado.
+        Asigna un paciente al médico si no está ya asignado.
 
         Parámetros
         ----------
-        paciente : Paciente
-            El paciente que se va a asignar al médico.
-
-        Devuelve
-        -------
-        None
+        paciente : object
+            Objeto de tipo Paciente a asignar.
         '''
         if paciente in self.pacientes_asignados:
             print(f'El paciente {paciente.nombre} ya está asignado a este médico.')
@@ -130,99 +108,144 @@ class Medico(Trabajador):
             self.pacientes_asignados.append(paciente)
             print(f'Paciente {paciente.nombre} asignado al médico {self.nombre}.')
 
-    def obtener_historial_pacientes(self) -> list:
+    def obtener_historial_pacientes(self, paciente: object) -> list:
         '''
-        Devuelve una lista con los pacientes asignados al médico.
+        Obtiene la lista de pacientes asignados al médico.
+
+        Parámetros
+        ----------
+        paciente : object
+            Objeto de tipo Paciente.
 
         Devuelve
-        -------
+        --------
         list
-            Lista de objetos pacientes asignados al médico.
+            Lista de pacientes asignados al médico.
         '''
         historial_pacientes = []
         if not self.pacientes_asignados:
             return f'No hay pacientes asignados actualmente.'
         else:
             for paciente in self.pacientes_asignados:
-                historial_pacientes.append(str(paciente))
+                historial_pacientes.append(paciente)
             return historial_pacientes
+
+    def to_dict(self) -> dict:
+        '''
+        Convierte la información del médico en un diccionario.
+
+        Devuelve
+        --------
+        dict
+            Diccionario con los atributos clave del médico.
+        '''
+        return {
+            'id': self.id,
+            'username': self.username,
+            'password': self.password,
+            'nombre': self.nombre,
+            'apellido': self.apellido,
+            'edad': self.edad,
+            'genero': self.genero,
+            'horas': self.horas,
+            'especialidad': self.especialidad,
+            'antiguedad': self.antiguedad,
+            'turno': self.turno.lower(),
+            'rol': self.rol,
+            'pacientes_asignados': self.pacientes_asignados,
+            'salario': self.salario
+        }
 
     def __str__(self) -> str:
         '''
-        Devuelve una cadena con la información del médico en formato legible.
+        Devuelve una representación en texto del objeto médico.
 
         Devuelve
-        -------
+        --------
         str
-            Información del médico.
+            Representación en texto del médico.
         '''
-        return (f'ID: {self.id} - Nombre: {self.nombre} - Apellido {self.apellido} - Edad {self.edad} - Género {self.genero} - Turno: {self.turno} - '
-                f'Horas: {self.horas} - Especialidad: {self.especialidad} - Salario: {self.salario} - Antiguedad: {self.antiguedad}')
+        return (
+            f'ID: {self.id} - Nombre: {self.nombre} - Apellido {self.apellido} - Edad {self.edad} - Género {self.genero} - Turno: {self.turno} - '
+            f'Horas: {self.horas} - Especialidad: {self.especialidad} - Salario: {self.salario} - Antiguedad: {self.antiguedad}'
+        )
+
 # Creación de objetos Medico con sus atributos
 medico1 = Medico(
-    id="MED001",
-    nombre="Juan",
-    apellido="Pérez",
+    id='MED001',
+    username='juanmed',
+    password='1234',
+    nombre='Juan',
+    apellido='Pérez',
     edad=45,
-    genero="Masculino",
-    turno="Día",
+    genero='Masculino',
+    turno='Día',
     horas=40,
     salario=3000.00,
-    especialidad="Cardiología",
+    especialidad='Cardiología',
     antiguedad=12
 )
 
 medico2 = Medico(
-    id="MED002",
-    nombre="Ana",
-    apellido="Gómez",
+    id='MED002',
+    username='anamed',
+    password='abcd',
+    nombre='Ana',
+    apellido='Gómez',
     edad=38,
-    genero="Femenino",
-    turno="Noche",
+    genero='Femenino',
+    turno='Noche',
     horas=36,
     salario=2800.00,
-    especialidad="Pediatría",
+    especialidad='Pediatría',
     antiguedad=6
 )
 
 medico3 = Medico(
-    id="MED003",
-    nombre="Carlos",
-    apellido="Martínez",
+    id='MED003',
+    username='carlosneu',
+    password='neu123',
+    nombre='Carlos',
+    apellido='Martínez',
     edad=50,
-    genero="Masculino",
-    turno="Día",
+    genero='Masculino',
+    turno='Día',
     horas=42,
     salario=3500.00,
-    especialidad="Neurología",
+    especialidad='Neurología',
     antiguedad=15
 )
 
 medico4 = Medico(
-    id="MED004",
-    nombre="María",
-    apellido="Lopez",
+    id='MED004',
+    username='marialop',
+    password='mlop456',
+    nombre='María',
+    apellido='Lopez',
     edad=40,
-    genero="Femenino",
-    turno="Día",
+    genero='Femenino',
+    turno='Día',
     horas=38,
     salario=3100.00,
-    especialidad="Traumatología",
+    especialidad='Traumatología',
     antiguedad=8
 )
 
 medico5 = Medico(
-    id="MED005",
-    nombre="Luis",
-    apellido="Sánchez",
+    id='MED005',
+    username='luissan',
+    password='ls123',
+    nombre='Luis',
+    apellido='Sánchez',
     edad=35,
-    genero="Masculino",
-    turno="Noche",
+    genero='Masculino',
+    turno='Noche',
     horas=40,
     salario=2900.00,
-    especialidad="Dermatología",
+    especialidad='Dermatología',
     antiguedad=4
 )
+
 print(medico1)
 print(medico2)
 print(medico3)
@@ -232,4 +255,5 @@ print(medico5)
 medico1.asignar_paciente(paciente10)
 medico1.asignar_paciente(paciente6)
 medico5.asignar_paciente(paciente1)
-print(medico1.obtener_historial_pacientes())
+
+print(medico1.obtener_historial_pacientes(paciente10))

@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-
+from datetime import datetime
 
 class Cita(ABC):
     '''
@@ -16,10 +16,8 @@ class Cita(ABC):
         Nombre del paciente.
     medico : str
         Nombre del médico asignado.
-    fecha : str
-        Fecha en la que se llevará a cabo la cita.
-    hora : str
-        Hora en la que se llevará a cabo la cita.
+    Fecha_hora : str
+        Fehca y hora en la que se llevará a cabo la cita.
     estado : str, opcional
         Estado de la cita. Por defecto es 'pendiente'.
     atendido : bool, opcional
@@ -27,8 +25,8 @@ class Cita(ABC):
 
     Métodos
     --------
-    __init__(self, id_cita, paciente, medico, fecha, hora, estado='pendiente', atendido=False)
-        Inicializa una nueva cita médica con el ID, paciente, médico, fecha, hora, estado y si ha sido atendida o no.
+    __init__(self, id_cita, paciente, medico, fecha_hora, estado='pendiente', atendido=False)
+        Inicializa una nueva cita médica con el ID, paciente, médico, fecha_hora, estado y si ha sido atendida o no.
 
     cancelar_cita(self)
         Cancela la cita, cambia el estado a 'cancelado' y marca la cita como no atendida.
@@ -38,9 +36,9 @@ class Cita(ABC):
     '''
 
     # Método de inicialización
-    def __init__(self, id_cita: str, paciente: str, medico: str, fecha: str, hora: str, estado: str='pendiente', atendido: bool=False):
+    def __init__(self, id_cita: str, paciente: str, medico: str, fecha_hora: str, motivo: str,  estado: str='pendiente', atendido: bool=False):
         '''
-        Inicializa una nueva cita médica con el ID, paciente, médico, fecha, hora, estado y si ha sido atendida o no.
+        Inicializa una nueva cita médica con el ID, paciente, médico, fecha_hora, estado y si ha sido atendida o no.
 
         Parámetros
         ----------
@@ -50,10 +48,8 @@ class Cita(ABC):
             Nombre del paciente.
         medico : str
             Nombre del médico asignado.
-        fecha : str
-            Fecha en la que se llevará a cabo la cita.
-        hora : str
-            Hora en la que se llevará a cabo la cita.
+        fecha_hora : str
+            Fecha y hora en la que se llevará a cabo la cita.
         estado : str, opcional
             Estado de la cita, por defecto 'pendiente'.
         atendido : bool, opcional
@@ -63,8 +59,8 @@ class Cita(ABC):
         self.id_cita = id_cita
         self.paciente = paciente
         self.medico = medico
-        self.fecha = fecha
-        self.hora = hora
+        self.motivo = motivo
+        self.fecha_hora_dt = datetime.strptime(fecha_hora, '%Y %m %d %H:%M')
         self.estado = estado
         self.atendido = atendido
 
@@ -98,4 +94,39 @@ class Cita(ABC):
         self.estado = 'completado'
         return self.atendido
 
+    def se_solapa(self, otra_cita: 'Cita') -> bool:
+        '''
+        Determina si esta cita se solapa con otra cita (menos de 30 minutos de diferencia).
+
+        Parámetros
+        ----------
+        otra_cita : Cita
+            Otra cita con la que se quiere comprobar el solapamiento.
+
+        Devuelve
+        --------
+        bool
+            True si las citas se solapan, False en caso contrario.
+        '''
+        delta = abs((self.fecha_hora_dt - otra_cita.fecha_hora_dt).total_seconds())
+        return delta < 1800
+
+    def to_dict(self) -> dict:
+        '''
+        Devuelve una representación de la cita como diccionario.
+
+        Devuelve
+        --------
+        dict
+            Diccionario con los datos de la cita.
+        '''
+        return {
+            'id_cita': self.id_cita,
+            'paciente': self.paciente,
+            'medico': self.medico,
+            'motivo': self.motivo,
+            'fecha_hora': self.fecha_hora_dt.strftime('%Y-%m-%d %H:%M'),
+            'estado': self.estado,
+            'atendido': self.atendido
+        }
 #Como cita es una clase abstracta, no se pueden crear objetos
