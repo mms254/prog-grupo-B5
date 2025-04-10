@@ -1,9 +1,11 @@
 from trabajador import Trabajador
 
 class Medico(Trabajador):
-    def __init__(self, id, nombre, apellido, edad, genero, turno, contratacion, horas, salario, especialidad,
+    def __init__(self, id, username, password, nombre, apellido, edad, genero, turno, contratacion, horas, salario, especialidad,
                  antiguedad):
         super().__init__(id, nombre, apellido, edad, genero, turno, contratacion, horas, salario)
+        self.username = username
+        self.password = password
         self.especialidad = especialidad
         self.antiguedad = antiguedad
         self.pacientes_asignados = []
@@ -40,6 +42,26 @@ class Medico(Trabajador):
             for paciente in self.pacientes_asignados:
                 historial_pacientes.append(paciente)
             return historial_pacientes
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "username": self.username,
+            "password": self.password,
+            "nombre": self.nombre,
+            "apellido": self.apellido,
+            "edad": self.edad,
+            "genero": self.genero,
+            "horas": self.horas,
+            "especialidad": self.especialidad,
+            "antiguedad": self.antiguedad,
+            "turno": self.turno.lower(),
+            "rol": self.rol,
+            "pacientes_asignados": self.pacientes_asignados,
+            "salario": self.salario
+        }
+
+
 
     def __str__(self):
         return (f'ID: {self.id} - Nombre: {self.nombre} - Apellido {self.apellido} - Edad {self.edad} - Género {self.genero} - Turno: {self.turno} - '

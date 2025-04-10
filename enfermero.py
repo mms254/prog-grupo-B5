@@ -2,12 +2,13 @@
 from trabajador import Trabajador
 
 class Enfermero(Trabajador):
-    def __init__(self, id, nombre, apellido, edad, genero, turno, horas, salario, especialidad, antiguedad, password):
+    def __init__(self, id, nombre, apellido, edad, genero, turno, horas, salario, especialidad, antiguedad, username, password):
         super().__init__(id, nombre, apellido, edad, genero, turno, horas, salario)
         self.especialidad = especialidad
         self.antiguedad = antiguedad
         self.auxiliar_asignado = None
         self.pacientes_asignados = []
+        self.username = username
         self.password = password
         self.rol = "enfermero"
 
@@ -60,6 +61,7 @@ class Enfermero(Trabajador):
             "salario": self.salario,
             "especialidad": self.especialidad,
             "antiguedad": self.antiguedad,
+            "username": self.username,
             "password": self.password,
             "rol": self.rol,
             "pacientes_asignados": [paciente.id for paciente in self.pacientes_asignados]

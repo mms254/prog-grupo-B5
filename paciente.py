@@ -3,8 +3,10 @@ from typing import List
 from persona import Persona
 from citas import Cita
 class Paciente(Persona):
-    def __init__(self, id, nombre, apellido, edad, genero, estado, medico_asignado=None, enfermero_asignado = None, habitacion_asginada = None, historial_medico: List[str] = None):
+    def __init__(self, id,username, password, nombre, apellido, edad, genero, estado, medico_asignado=None, enfermero_asignado = None, habitacion_asginada = None, historial_medico: List[str] = None):
         super().__init__(id, nombre, apellido, edad, genero, 'paciente')
+        self.username = username
+        self.password = password
         self.estado = estado
         self.medico_asignado = medico_asignado
         self.enfermero_asignado = enfermero_asignado
