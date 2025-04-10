@@ -1,9 +1,4 @@
 from typing import List
-
-from persona import Persona
-from citas import Cita
-
-
 from persona import Persona
 from citas import Cita
 class Paciente(Persona):
@@ -68,21 +63,21 @@ class Paciente(Persona):
         Devuelve un diccionario con los atributos del paciente.
     '''
 
-def __init__(self, id,username, password, nombre, apellido, edad, genero, estado, medico_asignado=None, enfermero_asignado = None, habitacion_asginada = None, historial_medico: List[str] = None):
-    super().__init__(id, nombre, apellido, edad, genero, 'paciente')
+    def __init__(self, id,username, password, nombre, apellido, edad, genero, estado, medico_asignado=None, enfermero_asignado = None, habitacion_asginada = None, historial_medico: List[str] = None):
+        super().__init__(id, nombre, apellido, edad, genero, 'paciente')
 
-    self.username = username
-    self.password = password
-    self.estado = estado
-    self.medico_asignado = medico_asignado
-    self.enfermero_asignado = enfermero_asignado
-    self.habitacion_asginada = habitacion_asginada
-    self.enfermedades = []
-    self.prioridad_urgencias = 0
-    self.historial_medico = historial_medico if historial_medico is not None else []
-    self.citas: List[Cita] = []
+        self.username = username
+        self.password = password
+        self.estado = estado
+        self.medico_asignado = medico_asignado
+        self.enfermero_asignado = enfermero_asignado
+        self.habitacion_asginada = habitacion_asginada
+        self.enfermedades = []
+        self.prioridad_urgencias = 0
+        self.historial_medico = historial_medico if historial_medico is not None else []
+        self.citas: List[Cita] = []
 
-def asignar_medico(self, medico):
+    def asignar_medico(self, medico):
         '''
         Asigna un médico al paciente y devuelve un mensaje confirmando la asignación.
 
@@ -99,7 +94,7 @@ def asignar_medico(self, medico):
         self.medico_asignado = medico
         return f'El médico/a {medico.nombre} se ha asignado al paciente {self.nombre}'
 
-def asignar_habitacion(self, habitacion):
+    def asignar_habitacion(self, habitacion):
         '''
         Asigna una habitación al paciente y devuelve un mensaje confirmando la asignación.
 
@@ -116,7 +111,7 @@ def asignar_habitacion(self, habitacion):
         self.habitacion_asginada = habitacion
         return f'Al paciente {self.nombre} se le ha asignado la habitación {habitacion.numero_habitacion}'
 
-def asignar_enfermero(self, enfermero):
+    def asignar_enfermero(self, enfermero):
         '''
         Asigna un enfermero al paciente y devuelve un mensaje confirmando la asignación.
 
@@ -133,7 +128,7 @@ def asignar_enfermero(self, enfermero):
         self.enfermero_asignado = enfermero
         return f'Al paciente {self.nombre} se le ha asignado el enfermero/a {enfermero.nombre}'
 
-def cambiar_estado(self, nuevo_estado):
+    def cambiar_estado(self, nuevo_estado):
         '''
         Cambia el estado del paciente a un nuevo valor (grave, moderado, leve).
 
@@ -144,7 +139,7 @@ def cambiar_estado(self, nuevo_estado):
         '''
         self.estado = nuevo_estado
 
-def prioridad_urgencias(self):
+    def prioridad_urgencias(self):
         '''
         Establece la prioridad del paciente en urgencias según su estado (grave, moderado, leve).
 
@@ -163,7 +158,7 @@ def prioridad_urgencias(self):
             self.prioridad_urgencias = 3
             print(f'El paciente {self.nombre} tiene prioridad baja en urgencias.')
 
-def asignar_enfermedades(self, enfermedad):
+    def asignar_enfermedades(self, enfermedad):
         '''
         Asigna una enfermedad al paciente si no está ya registrada en su historial.
 
@@ -182,7 +177,7 @@ def asignar_enfermedades(self, enfermedad):
         else:
             print('El paciente ya tiene esa enfermedad')
 
-def to_dict(self): # Hecho por Ricardo
+    def to_dict(self): # Hecho por Ricardo
         '''
         Devuelve un diccionario con los atributos del paciente.
 
@@ -207,15 +202,3 @@ def to_dict(self): # Hecho por Ricardo
             'enfermero_asignado': self.enfermero_asignado.id if self.enfermero_asignado else None
         }
 
-# Creación de objetos de la clase Paciente
-paciente1 = Paciente(id='P001', username='carlos_crespo', password='password123', nombre='Carlos', apellido='Crespo', edad=45, genero='Masculino', estado='grave', medico_asignado=None, enfermero_asignado=None, habitacion_asginada=None, historial_medico=[])
-paciente2 = Paciente(id="P002", username='lucia_monteagudo', password='password123', nombre='Lucia', apellido='Monteagudo', edad=36, genero='Femenino', estado='moderado', medico_asignado=None, enfermero_asignado=None, habitacion_asginada=None, historial_medico=[])
-paciente3 = Paciente(id="P003", username='marcos_hernandez', password='password123', nombre='Marcos', apellido='Hernandez', edad=60, genero='Masculino', estado='leve', medico_asignado=None, enfermero_asignado=None, habitacion_asginada=None, historial_medico=[])
-paciente4 = Paciente(id="P004", username='daniel_paredes', password='password123', nombre='Daniel', apellido='Paredes', edad=52, genero='Masculino', estado='grave', medico_asignado=None, enfermero_asignado=None, habitacion_asginada=None, historial_medico=[])
-paciente5 = Paciente(id="P005", username='mario_morant', password='password123', nombre='Mario', apellido='Morant', edad=28, genero='Masculino', estado='moderado', medico_asignado=None, enfermero_asignado=None, habitacion_asginada=None, historial_medico=[])
-paciente6 = Paciente(id="P006", username='pedro_sanchez', password='password123', nombre='Pedro', apellido='Sánchez', edad=39, genero='Masculino', estado='leve', medico_asignado=None, enfermero_asignado=None, habitacion_asginada=None, historial_medico=[])
-paciente7 = Paciente(id="P007", username='tralalero_tralala', password='password123', nombre='Tralalero', apellido='Tralala', edad=48, genero='Masculino', estado='grave', medico_asignado=None, enfermero_asignado=None, habitacion_asginada=None, historial_medico=[])
-paciente8 = Paciente(id="P008", username='david_diez', password='password123', nombre='David', apellido='Díez', edad=31, genero='Masculino', estado='moderado', medico_asignado=None, enfermero_asignado=None, habitacion_asginada=None, historial_medico=[])
-paciente9 = Paciente(id="P009", username='ester_estirado', password='password123', nombre='Ester', apellido='Estirado', edad=55, genero='Femenino', estado='leve', medico_asignado=None, enfermero_asignado=None, habitacion_asginada=None, historial_medico=[])
-paciente10 = Paciente(id="P010", username='tung_tung_sahur', password='password123', nombre='Tung Tung', apellido='Sahur', edad=40, genero='Masculino', estado='grave', medico_asignado=None, enfermero_asignado=None, habitacion_asginada=None, historial_medico=[])
-paciente11 = Paciente(id='P011', username='natalia_sofia_vila', password='password123', nombre='Natalia Sofia', apellido='Vila', edad=69, genero='Femenino', estado='moderado', medico_asignado=None, enfermero_asignado=None, habitacion_asginada=None, historial_medico=[])

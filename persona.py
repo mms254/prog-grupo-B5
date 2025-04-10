@@ -79,10 +79,3 @@ def __str__(self) -> str:
         '''
 
         return(f'ID: {self.id} - Nombre: {self.nombre} - Apellido {self.apellido} - Edad {self.edad} - Género {self.genero}')
-
-# Creación de objetos de la clase Persona
-persona1 = Persona(id='P001', nombre='Carlos', apellido='Crespo', edad=45, genero='Masculino', rol='paciente', password='password123')
-persona2 = Persona(id='P002', nombre='Lucia', apellido='Monteagudo', edad=36, genero='Femenino', rol='paciente', password='password123')
-persona3 = Persona(id='P003', nombre='Marcos', apellido='Hernandez', edad=60, genero='Masculino', rol='paciente', password='password123')
-persona4 = Persona(id='P004', nombre='Daniel', apellido='Paredes', edad=52, genero='Masculino', rol='paciente', password='password123')
-persona5 = Persona(id='P005', nombre='Mario', apellido='Morant', edad=28, genero='Masculino', rol='paciente', password='password123')

@@ -4,28 +4,9 @@ class Trabajador(Persona):
     '''
     Clase que representa a un trabajador del sistema hospitalario, heredando de Persona.
     Contiene información sobre su turno, horas diarias y salario mensual.
-
-    Atributos
-    ----------
-    id : str
-        Identificador único del trabajador.
-    nombre : str
-        Nombre del trabajador.
-    apellido : str
-        Apellido del trabajador.
-    edad : int
-        Edad del trabajador.
-    genero : str
-        Género del trabajador.
-    turno : str
-        Turno en el que trabaja (mañana, tarde, noche).
-    horas : int
-        Número de horas que trabaja al día.
-    salario : float
-        Salario mensual del trabajador.
     '''
 
-    def __init__(self, id: str, nombre: str, apellido: str, edad: int, genero: str, turno: str, horas: int, salario: float = 0.0) -> None:
+    def __init__(self, id: str, nombre: str, apellido: str, edad: int, genero: str, turno: str, horas: int, salario: float = 0.0, password: str = "default_password"):
         '''
         Inicializa los atributos del trabajador.
 
@@ -47,28 +28,32 @@ class Trabajador(Persona):
             Número de horas que trabaja al día.
         salario : float, opcional
             Salario mensual del trabajador. Por defecto es 0.0.
+        password : str, opcional
+            Contraseña del trabajador. Por defecto es "default_password".
         '''
-        super().__init__(id, nombre, apellido, edad, genero)
+        if not isinstance(id, str) or not id.strip():
+            raise ValueError("El ID debe ser una cadena no vacía.")
+        if not isinstance(nombre, str) or not nombre.strip():
+            raise ValueError("El nombre debe ser una cadena no vacía.")
+        if not isinstance(apellido, str) or not apellido.strip():
+            raise ValueError("El apellido debe ser una cadena no vacía.")
+        if not isinstance(edad, int) or edad <= 0:
+            raise ValueError("La edad debe ser un entero positivo.")
+        if not isinstance(genero, str) or not genero.strip():
+            raise ValueError("El género debe ser una cadena no vacía.")
+        if not isinstance(turno, str) or not turno.strip():
+            raise ValueError("El turno debe ser una cadena no vacía.")
+        if not isinstance(horas, int) or horas <= 0:
+            raise ValueError("Las horas deben ser un entero positivo.")
+        if not isinstance(salario, (int, float)) or salario < 0:
+            raise ValueError("El salario debe ser un número no negativo.")
+        if not isinstance(password, str) or not password.strip():
+            raise ValueError("La contraseña debe ser una cadena no vacía.")
+
+        super().__init__(id, nombre, apellido, edad, genero, password=password)
         self.turno = turno
         self.horas = horas
         self.salario = salario
-
-    def calcular_horas_trabajadas_mes(self, dias_trabajados: int) -> None:
-        '''
-        Calcula el total de horas trabajadas por el trabajador en un mes.
-
-        Parámetros
-        ----------
-        dias_trabajados : int
-            Número de días trabajados en el mes.
-
-        Devuelve
-        -------
-        None
-            Imprime el total de horas trabajadas en el mes.
-        '''
-        horas_trabajadas = self.horas * dias_trabajados
-        print(f'El trabajador {self.nombre} ha trabajado un total de {horas_trabajadas} horas este mes.')
 
     def cambiar_turno(self, nuevo_turno: str) -> None:
         '''
@@ -78,50 +63,19 @@ class Trabajador(Persona):
         ----------
         nuevo_turno : str
             Nuevo turno que se asignará al trabajador.
-
-        Devuelve
-        -------
-        None
-            Imprime un mensaje confirmando el cambio de turno.
         '''
+        if not isinstance(nuevo_turno, str) or not nuevo_turno.strip():
+            raise ValueError("El nuevo turno debe ser una cadena no vacía.")
         self.turno = nuevo_turno
-        print(f'El turno del médico {self.nombre}, con ID: {self.id} ha sido cambiado a {self.turno}.')
+        print(f"El turno ha sido cambiado a {self.turno}.")
 
-    def horas_extras(self, horas_extra: int) -> None:
+    def calcular_salario_anual(self) -> float:
         '''
-        Calcula la paga extra por horas adicionales y actualiza el salario del trabajador.
-
-        Parámetros
-        ----------
-        horas_extra : int
-            Número de horas extras trabajadas.
+        Calcula el salario anual del trabajador.
 
         Devuelve
         -------
-        None
-            Actualiza el salario del trabajador con la paga correspondiente por horas extra.
+        float
+            Salario anual del trabajador.
         '''
-        paga_extra = horas_extra * (self.salario / self.horas)
-        self.salario += paga_extra
-
-    def despedir(self) -> str:
-        '''
-        Marca al trabajador como despedido.
-
-        Devuelve
-        -------
-        str
-            Mensaje indicando que el trabajador ha sido despedido.
-        '''
-        self.trabajar = False
-        return f'El trabajador {self.nombre} con id {self.id} ha sido despedido'
-trabajador1 = Trabajador(id='T001', nombre='Ana', apellido='Gómez', edad=34, genero='Femenino', turno='mañana', horas=8, salario=1800.0)
-trabajador2 = Trabajador(id='T002', nombre='Luis', apellido='Martínez', edad=42, genero='Masculino', turno='tarde', horas=7, salario=1650.0)
-trabajador3 = Trabajador(id='T003', nombre='Claudia', apellido='Ruiz', edad=29, genero='Femenino', turno='noche', horas=10, salario=2000.0)
-trabajador4 = Trabajador(id='T004', nombre='Andrés', apellido='Pérez', edad=50, genero='Masculino', turno='mañana', horas=6, salario=1500.0)
-trabajador5 = Trabajador(id='T005', nombre='Sara', apellido='Navarro', edad=38, genero='Femenino', turno='tarde', horas=8, salario=1700.0)
-
-trabajador1.horas_extras(10)
-print(trabajador2.despedir())
-trabajador5.cambiar_turno('Noche')
-trabajador3.calcular_horas_trabajadas_mes(20)
+        return self.salario * 12

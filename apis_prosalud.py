@@ -1,246 +1,219 @@
 """
-Esta parte del código maneja una API que utilizaremos para la gestión de medicamentos. La API que utilizaremos se llama RxNorm.
+API para la gestión de usuarios y SIPs en un sistema de salud.
 
-RxNorm es una API médica estadounidense, mantenida por la NLM (National Library of Medicine). Si bien no proporciona apenas medicamentos
-de otros países, la gran mayoría de objetos que necesitamos (por no decir todos) los encontraremos aquí. Es especialmente útil para
-recibir información sobre medicamentos, como su uso clínico o su nombre estandarizado.
-
-
-Para que funcione, se debe importar la librería requests.
+Esta API incluye:
+- Endpoints para gestionar SIPs (Sistema de Identificación de Pacientes).
+- Integración con la API RxNorm para obtener información sobre medicamentos.
+- Gestión de usuarios (pacientes, médicos, enfermeros, auxiliares) con autenticación.
+- Endpoints para asignar médicos, habitaciones y listar pacientes/trabajadores.
 """
 
-import requests
-
-URL='https://rxnav.nlm.nih.gov/REST/drugs.json' #defino la url que voy a utilizar
-
-def obtener_informacion(medicamento: str) -> None:
-    """
-    Esta función recoge el nombre de un medicamento e imprime una gran cantidad de información almacenada en la base de datos
-    de la API. Gracias a la API, no hay que escribir el nombre exacto de un medicamento, ya que lo detecta por nombres similares o
-    al escribirlo en español en lugar de en inglés.
-
-    Parámetros:
-    ---------
-    medicamento: str
-    nombre del medicamento del que queremos obtener la información.
-    """
-
-    try: #probamos
-        informacion = requests.get(URL, params = {'name': medicamento})
-        informacion.raise_for_status() #esta línea es muy importante para ver si ha funcionado correctamente la URL
-
-        info_contenida= informacion.json() #guardamos la información que tenemos en la URL en formato json
-
-        if 'conceptGroup' in info_contenida['drugGroup']:
-            """
-            esta línea es complicada y requiere explicación. Tanto lo de "drugGroup" como "conceptGroup" lo encontramos en la API
-            que hemos implementado.
-            Indagando en la documentación de la API, encontramos un apartado llamado "getDrugs", que especifica que sirve para
-            devolver información sobre el medicamento según el nombre ("Information returned: Drugs related to a specified name" son
-            las palabras exactas usadas en la documentación de la API.) Si bajamos un poco, encontramos "drugGroup", dentro del cual
-            vemos también "conceptGroup". Dentro de estos dos, tenemos "conceptProperties", que necesitamos para obtener la información,
-            así que debemos de asegurarnos de que conceptGroup (que está dentro de "drugGroup", por eso se especifica de esa forma) está
-            presente y que no mostremos información que no queremos
-            """
-            #creamos una donde guardemos la info de los medicamentos en forma de diccionarios (vemos en la API que es un array)
-            medicamentos = info_contenida['drugGroup']['conceptGroup']#intenté poder sólo "ConceptGroup" pero como uno estaba dentro del otro, me daba un IndexError
-            for med in medicamentos: #vamos a recorrer la lista de medicamentos, sacar la información e imprimirla.
-                if 'conceptProperties' in med: #comprobamos que esté "conceptProperties", que si vemos en la documentación no siempre está.
-                    for propiedad in med['conceptProperties']: #recorremos todas las propiedades y vamos a seleccionar algunas que podamos imprimir.
-                        print(f'Nombre: {propiedad.get("name")}') #con .get, que lo dimos en clase, sacamos un determinado atributo de un diccionario
-                        print(f'RXCUI: {propiedad.get("rxcui")}')
-                        print(f'TTY: {propiedad.get("tty")}')
-                        print(f'Idioma: {propiedad.get("language")}')#he usado comillas dobles porque si no entraba en conflicto con las comillas del f'
-                        print('-------------------------------') #un simple separador para que quede más limpio, que al probar el código vi que mareaba
-                        print('') #nueva línea
-
-        else: #si no puede acceder al medicamento, elevamos un error.
-            raise NameError('El medicamento que has proporcionado no existe o no se encuentra en la base de datos.')
-
-    except requests.exceptions.RequestException as error: #este error ocurre cuando no se puede completar la solicitud con el "https"
-        print(f'No se puede completar su solicitud: {error}')
-
-#Aquí para el menú hay que poner solicitar un medicamento.
+# === Importaciones ===
 from flask import Flask, request, jsonify
+from functools import wraps
+import requests
 import uuid
+from typing import Dict, Any
 
+from auxiliar import Auxiliar
+from enfermero import Enfermero
+from medico import Medico
+from paciente import Paciente
+from habitacion import Habitacion
+from pdf_generator import generar_pdf_paciente
+
+# === Configuración de la Aplicación ===
 app = Flask(__name__)
 
-# Simulación de base de datos en memoria para almacenar los SIPs de los pacientes
-sips = {}
+# URL de la API RxNorm para consultar medicamentos
+RXNORM_URL = "https://rxnav.nlm.nih.gov/REST/drugs.json"
 
+# === Base de Datos en Memoria ===
+# Diccionarios para almacenar datos en memoria (SIPs, pacientes, trabajadores)
+sips: Dict[str, str] = {}  # Almacena los SIPs de los pacientes
+pacientes: Dict[str, Any] = {}  # Almacena pacientes
+medicos: Dict[str, Any] = {}  # Almacena médicos
+enfermeros: Dict[str, Any] = {}  # Almacena enfermeros
+auxiliares: Dict[str, Any] = {}  # Almacena auxiliares
 
+# Diccionario para simular usuarios registrados (en lugar de una base de datos)
+usuarios_registrados = {
+    "juan": {"password": "pepe123", "rol": "paciente"},
+    "ana": {"password": "med123", "rol": "medico"},
+    "luis": {"password": "enf123", "rol": "enfermero"}
+}
+
+# === Decorador de Autenticación ===
+def requiere_autenticacion(f):
+    """
+    Decorador que verifica la autenticación básica (usuario y contraseña) en la solicitud.
+    Usa un diccionario en memoria para validar los usuarios.
+    Si las credenciales son válidas, pasa un objeto usuario con el rol al endpoint.
+    Si no, devuelve un error 401 (Unauthorized).
+    """
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        # Obtener las credenciales de autenticación básica de la solicitud
+        auth = request.authorization
+        if not auth or not auth.username or not auth.password:
+            return jsonify({"detail": "Autenticación requerida. Proporcione usuario y contraseña."}), 401
+
+        # Buscar el usuario en el diccionario de usuarios registrados
+        usuario = usuarios_registrados.get(auth.username)
+        if not usuario:
+            return jsonify({"detail": "Usuario no encontrado."}), 401
+
+        # Verificar la contraseña
+        if usuario["password"] != auth.password:
+            return jsonify({"detail": "Contraseña incorrecta."}), 401
+
+        # Crear un objeto usuario con el rol
+        class UsuarioTemporal:
+            def __init__(self, rol):
+                self.rol = rol
+
+        usuario_obj = UsuarioTemporal(usuario["rol"])
+        return f(usuario_obj, *args, **kwargs)
+
+    return decorated_function
+
+# === Funciones de Utilidad para RxNorm ===
+def obtener_informacion_medicamento(medicamento: str) -> None:
+    """
+    Consulta información de un medicamento usando la API RxNorm y la imprime.
+
+    Parámetros
+    ----------
+    medicamento : str
+        Nombre del medicamento a consultar.
+
+    Ejemplo
+    -------
+    >>> obtener_informacion_medicamento("ibuprofeno")
+    Nombre: Ibuprofen
+    RXCUI: 5640
+    TTY: IN
+    Idioma: ENG
+    -------------------------------
+    """
+    try:
+        # Realizar la solicitud a la API RxNorm
+        response = requests.get(RXNORM_URL, params={'name': medicamento})
+        response.raise_for_status()  # Verifica si la solicitud fue exitosa
+
+        # Parsear la respuesta JSON
+        data = response.json()
+
+        # Verificar si hay información de medicamentos
+        if 'conceptGroup' not in data['drugGroup']:
+            raise NameError('El medicamento no existe o no se encuentra en la base de datos.')
+
+        medicamentos = data['drugGroup']['conceptGroup']
+        for med in medicamentos:
+            if 'conceptProperties' in med:
+                for propiedad in med['conceptProperties']:
+                    print(f"Nombre: {propiedad.get('name')}")
+                    print(f"RXCUI: {propiedad.get('rxcui')}")
+                    print(f"TTY: {propiedad.get('tty')}")
+                    print(f"Idioma: {propiedad.get('language')}")
+                    print("-------------------------------")
+                    print("")
+
+    except requests.exceptions.RequestException as error:
+        print(f"No se puede completar la solicitud: {error}")
+    except NameError as error:
+        print(f"Error: {error}")
+
+# === Funciones de Utilidad para SIPs ===
 def generar_sip(paciente_id: str) -> str:
-    '''Genera un SIP único para el paciente.
+    """
+    Genera un SIP único para el paciente.
 
     Parámetros
     ----------
     paciente_id : str
-        Identificador único del paciente para el que se generará el SIP.
+        Identificador único del paciente.
 
     Devuelve
     --------
     str
-        SIP generado en formato único 'SIP-<código_hexadecimal>'.
-        El código hexadecimal es generado a partir de un UUID, limitado a 10 caracteres y en mayúsculas.
-
-    Ejemplo
-    -------
-    Si paciente_id es 'P001', el SIP generado podría ser 'SIP-ABC123XYZ'.
-    '''
-    sip = f'SIP-{uuid.uuid4().hex[:10].upper()}'  # Genera el SIP con uuid version 4, para que el SIP sea único y tenga 10 caracteres
+        SIP generado en formato 'SIP-<código_hexadecimal>'.
+    """
+    sip = f"SIP-{uuid.uuid4().hex[:10].upper()}"  # Genera un SIP único
     sips[paciente_id] = sip
     return sip
 
-
+# === Endpoints de SIPs ===
 @app.route('/')
 def bienvenida():
-    '''Ruta principal que da la bienvenida al sistema y proporciona instrucciones básicas.
-
-    Devuelve
-    --------
-    jsonify
-        Un mensaje de bienvenida con instrucciones sobre cómo usar el sistema.
-
-    Ejemplo
-    -------
-    { 'mensaje': 'Bienvenido/a al sistema generador de SIPs. Modifica el enlace añadiendo /crear_sip/tu_id_de_paciente para generar tu SIP y usa /consultar_sip/tu_id_de_paciente para consultar el SIP.' }
-    '''
+    """Ruta principal que da la bienvenida al sistema."""
     return jsonify({
-        'mensaje': 'Bienvenido/a al sistema generador de SIPs. '
-                   'Modifica el enlace añadiendo /crear_sip/tu_id_de_paciente para generar tu SIP '
-                   'y usa /consultar_sip/tu_id_de_paciente para consultar el SIP.'
+        "mensaje": (
+            "Bienvenido/a al sistema generador de SIPs. "
+            "Use /crear_sip/<id_paciente> para generar un SIP y "
+            "/consultar_sip/<id_paciente> para consultar un SIP."
+        )
     })
-
 
 @app.route('/crear_sip/<paciente_id>', methods=['GET'])
 def crear_sip(paciente_id: str):
-    '''Crea un SIP para el paciente especificado por su ID.
+    """
+    Crea un SIP para el paciente especificado por su ID.
 
     Parámetros
     ----------
     paciente_id : str
-        El identificador del paciente para el que se generará el SIP.
+        Identificador del paciente.
 
     Devuelve
     --------
     jsonify
-        Un mensaje confirmando la creación del SIP o informando que el paciente ya tiene uno asignado.
-
-    Ejemplo
-    -------
-    Si el paciente no tiene un SIP asignado, la respuesta será:
-    { 'mensaje': 'SIP creado correctamente', 'sip': 'SIP-ABC123XYZ' }
-
-    Si el paciente ya tiene un SIP asignado, la respuesta será:
-    { 'mensaje': 'El paciente ya tiene un SIP asignado', 'sip': 'SIP-ABC123XYZ' }
-    '''
+        Mensaje de confirmación o error.
+    """
     if paciente_id in sips:
-        return jsonify({'mensaje': 'El paciente ya tiene un SIP asignado', 'sip': sips[paciente_id]}), 400
-    sip = generar_sip(paciente_id)  # Se genera el SIP utilizando la función generar_sip
-    return jsonify({'mensaje': 'SIP creado correctamente', 'sip': sip})
-
+        return jsonify({"mensaje": "El paciente ya tiene un SIP asignado", "sip": sips[paciente_id]}), 400
+    sip = generar_sip(paciente_id)
+    return jsonify({"mensaje": "SIP creado correctamente", "sip": sip})
 
 @app.route('/consultar_sip/<paciente_id>', methods=['GET'])
 def consultar_sip(paciente_id: str):
-    '''Consulta el SIP asignado a un paciente por su ID.
+    """
+    Consulta el SIP asignado a un paciente por su ID.
 
     Parámetros
     ----------
     paciente_id : str
-        El identificador del paciente cuyo SIP se quiere consultar.
+        Identificador del paciente.
 
     Devuelve
     --------
     jsonify
-        El SIP del paciente si existe, o un mensaje de error si no se encuentra.
-
-    Ejemplo
-    -------
-    Si el paciente tiene un SIP asignado, la respuesta será:
-    { 'paciente_id': 'P001', 'sip': 'SIP-ABC123XYZ' }
-
-    Si no se encuentra un SIP para el paciente, la respuesta será:
-    { 'mensaje': 'No se encontró el SIP para ese paciente' }
-    '''
-    sip = sips.get(paciente_id)  # Recupera el SIP del paciente por su ID
+        SIP del paciente o mensaje de error.
+    """
+    sip = sips.get(paciente_id)
     if sip:
-        return jsonify({'paciente_id': paciente_id, 'sip': sip})  # Devuelve el SIP del paciente
-    return jsonify(
-        {'mensaje': 'No se encontró el SIP para ese paciente'}), 404  # Si no existe el SIP, devuelve un error
+        return jsonify({"paciente_id": paciente_id, "sip": sip})
+    return jsonify({"mensaje": "No se encontró el SIP para ese paciente"}), 404
 
-
-if __name__ == '__main__':
-    app.run(debug=True)
-# api_gestion_usuarios_flask.py
-# Creamos una API REST para la gestión de usuarios (pacientes y trabajadores)
-# Utilizamos Flask para implementar los endpoints necesarios
-# Mantenemos la lógica original de la clase GestionUsuarios
-
-from flask import Flask, request, jsonify
-from medico import Medico
-from enfermero import Enfermero
-from auxiliar import Auxiliar
-from paciente import Paciente
-from habitacion import Habitacion
-from typing import List, Dict, Tuple, Any, Union
-from persona import Persona
-from pdf_generator import generar_pdf_paciente
-
-
-# Creamos la aplicación Flask
-app = Flask(__name__)
-
-# Diccionarios para almacenar los datos de pacientes y trabajadores
-pacientes = {}
-medicos = {}
-enfermeros = {}
-auxiliares = {}
+# === Endpoints de Gestión de Usuarios ===
 @app.route("/menu", methods=["GET"])
-def menu_usuario(usuario: Persona) -> Tuple[Dict[str, Any], int]:
-    """Devuelve el menú de opciones según el rol del usuario autenticado.
+@requiere_autenticacion
+def menu_usuario(usuario):
+    """
+    Devuelve un menú de opciones según el rol del usuario autenticado.
 
-    Este endpoint devuelve un menú con las opciones disponibles para el usuario autenticado,
-    dependiendo de su rol (paciente, médico o enfermero). Requiere autenticación básica HTTP.
+    Parámetros
+    ----------
+    usuario : object
+        Objeto con el rol del usuario autenticado.
 
-    Args:
-        usuario (Persona): El usuario autenticado, inyectado por el decorador @requiere_autenticacion.
-                          Debe ser un objeto de tipo Persona (o una subclase como Paciente, Medico o Enfermero).
-
-    Returns:
-        Tuple[Dict[str, Any], int]: Una tupla que contiene:
-            - Un diccionario JSON con el rol del usuario y una lista de opciones del menú.
-            - Un código de estado HTTP (200 si es exitoso, 403 si el rol no es reconocido).
-
-    Raises:
-        None: Este endpoint no lanza excepciones explícitas, pero puede fallar si el decorador
-              @requiere_autenticacion no inyecta un usuario válido.
-
-    Example:
-        GET /menu
-        Headers: Authorization: Basic <username:password>
-        Response (para un paciente):
-            {
-                "rol": "paciente",
-                "menu": [
-                    "1. Ver información personal",
-                    "2. Pedir cita",
-                    "3. Descargar información en PDF",
-                    "4. Recomendar medicamento según síntomas",
-                    "5. Ver citas",
-                    "6. Salir"
-                ]
-            }
-        Status: 200
-
-        Response (error):
-            {
-                "detail": "Rol no reconocido"
-            }
-        Status: 403
+    Devuelve
+    --------
+    jsonify
+        Menú de opciones según el rol.
     """
     if usuario.rol == "paciente":
-        menu: List[str] = [
+        menu = [
             "1. Ver información personal",
             "2. Pedir cita",
             "3. Descargar información en PDF",
@@ -250,7 +223,7 @@ def menu_usuario(usuario: Persona) -> Tuple[Dict[str, Any], int]:
         ]
         return jsonify({"rol": "paciente", "menu": menu}), 200
     elif usuario.rol == "medico":
-        menu: List[str] = [
+        menu = [
             "1. Ver lista de pacientes",
             "2. Ver citas",
             "3. Agregar entrada al historial médico de un paciente",
@@ -258,7 +231,7 @@ def menu_usuario(usuario: Persona) -> Tuple[Dict[str, Any], int]:
         ]
         return jsonify({"rol": "medico", "menu": menu}), 200
     elif usuario.rol == "enfermero":
-        menu: List[str] = [
+        menu = [
             "1. Ver habitaciones asignadas",
             "2. Asignar paciente a habitación",
             "3. Limpiar habitación",
@@ -271,66 +244,75 @@ def menu_usuario(usuario: Persona) -> Tuple[Dict[str, Any], int]:
         return jsonify({"rol": "enfermero", "menu": menu}), 200
     else:
         return jsonify({"detail": "Rol no reconocido"}), 403
-# Endpoint para dar de alta un paciente
-# 1) Recibimos datos por JSON
-# 2) Creamos un objeto Paciente
-# 3) Lo guardamos en el diccionario
+
+@app.route('/pacientes', methods=['GET'])
+def listar_pacientes():
+    """
+    Lista todos los pacientes activos.
+
+    Devuelve
+    --------
+    jsonify
+        Lista de pacientes.
+    """
+    resultado = []
+    for p in pacientes.values():
+        resultado.append({
+            "nombre": p.nombre,
+            "apellido": p.apellido,
+            "estado": p.estado,
+            "medico_asignado": p.medico_asignado.nombre if p.medico_asignado else "No asignado"
+        })
+    return jsonify(resultado)
+
 @app.route('/pacientes/alta', methods=['POST'])
 def alta_paciente():
-    data = request.json
-    paciente = Paciente(**data)
-    pacientes[paciente.id] = paciente
-    return jsonify({'mensaje': f'Paciente {paciente.nombre} {paciente.apellido} dado de alta.'})
+    """
+    Da de alta un nuevo paciente.
 
-# Endpoint para dar de baja a un paciente según su ID
+    Devuelve
+    --------
+    jsonify
+        Mensaje de confirmación.
+    """
+    try:
+        data = request.json
+        paciente = Paciente(**data)
+        pacientes[paciente.id] = paciente
+        return jsonify({"mensaje": f"Paciente {paciente.nombre} {paciente.apellido} dado de alta."})
+    except Exception as e:
+        return jsonify({"error": f"Error al dar de alta al paciente: {str(e)}"}), 400
+
 @app.route('/pacientes/baja/<id_paciente>', methods=['DELETE'])
-def baja_paciente(id_paciente):
+def baja_paciente(id_paciente: str):
+    """
+    Da de baja a un paciente por su ID.
+
+    Parámetros
+    ----------
+    id_paciente : str
+        Identificador del paciente.
+
+    Devuelve
+    --------
+    jsonify
+        Mensaje de confirmación o error.
+    """
     if id_paciente in pacientes:
         del pacientes[id_paciente]
-        return jsonify({'mensaje': f'Paciente con ID {id_paciente} dado de baja.'})
-    return jsonify({'error': 'Paciente no encontrado'}), 404
+        return jsonify({"mensaje": f"Paciente con ID {id_paciente} dado de baja."})
+    return jsonify({"error": "Paciente no encontrado"}), 404
 
-@app.route("/paciente/descargar_pdf", methods=["GET"])
-def descargar_pdf(usuario):
-    if usuario.rol != "paciente":
-        return jsonify({"detail": "Acceso denegado"}), 403
-
-    nombre_pdf = generar_pdf_paciente(usuario)
-    return jsonify({"message": f"PDF generado: {nombre_pdf}"}), 200
-# Endpoint para dar de alta un trabajador (médico, enfermero, auxiliar)
-@app.route('/trabajadores/alta', methods=['POST'])
-def alta_trabajador():
-    data = request.json
-    rol = data.get('rol')
-    if rol == 'medico':
-        trabajador = Medico(**data)
-        medicos[trabajador.id] = trabajador
-    elif rol == 'enfermero':
-        trabajador = Enfermero(**data)
-        enfermeros[trabajador.id] = trabajador
-    elif rol == 'auxiliar':
-        trabajador = Auxiliar(**data)
-        auxiliares[trabajador.id] = trabajador
-    else:
-        return jsonify({'error': 'Rol no válido'}), 400
-    return jsonify({'mensaje': f'Trabajador {trabajador.nombre} {trabajador.apellido} dado de alta.'})
-
-# Endpoint para dar de baja a un trabajador según su ID
-@app.route('/trabajadores/baja/<id_trabajador>', methods=['DELETE'])
-def baja_trabajador(id_trabajador):
-    if id_trabajador in medicos:
-        del medicos[id_trabajador]
-    elif id_trabajador in enfermeros:
-        del enfermeros[id_trabajador]
-    elif id_trabajador in auxiliares:
-        del auxiliares[id_trabajador]
-    else:
-        return jsonify({'error': 'Trabajador no encontrado'}), 404
-    return jsonify({'mensaje': f'Trabajador con ID {id_trabajador} dado de baja.'})
-
-# Endpoint para asignar un médico a un paciente
 @app.route('/pacientes/asignar_medico', methods=['POST'])
 def asignar_medico_paciente():
+    """
+    Asigna un médico a un paciente.
+
+    Devuelve
+    --------
+    jsonify
+        Mensaje de confirmación o error.
+    """
     data = request.json
     id_paciente = data.get('id_paciente')
     id_medico = data.get('id_medico')
@@ -339,48 +321,135 @@ def asignar_medico_paciente():
     medico = medicos.get(id_medico)
 
     if not paciente or not medico:
-        return jsonify({'error': 'Paciente o médico no encontrado'}), 404
+        return jsonify({"error": "Paciente o médico no encontrado"}), 404
 
     paciente.medico_asignado = medico
-    return jsonify({'mensaje': f'Paciente {paciente.nombre} asignado a médico {medico.nombre}.'})
+    return jsonify({"mensaje": f"Paciente {paciente.nombre} asignado a médico {medico.nombre}."})
 
-# Endpoint para asignar una habitación a un paciente
 @app.route('/pacientes/asignar_habitacion', methods=['POST'])
 def asignar_habitacion_paciente():
+    """
+    Asigna una habitación a un paciente.
+
+    Devuelve
+    --------
+    jsonify
+        Mensaje de confirmación o error.
+    """
     data = request.json
     id_paciente = data.get('id_paciente')
     numero_habitacion = data.get('numero')
 
     paciente = pacientes.get(id_paciente)
     if not paciente:
-        return jsonify({'error': 'Paciente no encontrado'}), 404
+        return jsonify({"error": "Paciente no encontrado"}), 404
+
 
     habitacion = Habitacion(numero=numero_habitacion)
     paciente.habitacion_asignada = habitacion
-    return jsonify({'mensaje': f'Paciente {paciente.nombre} asignado a la habitación {habitacion.numero}.'})
+    return jsonify({"mensaje": f"Paciente {paciente.nombre} asignado a la habitación {habitacion.numero}."})
 
-# Endpoint para listar todos los pacientes activos
-@app.route('/pacientes', methods=['GET'])
-def listar_pacientes():
-    resultado = []
-    for p in pacientes.values():
-        resultado.append({
-            'nombre': p.nombre,
-            'apellido': p.apellido,
-            'estado': p.estado,
-            'medico_asignado': p.medico_asignado.nombre if p.medico_asignado else "No asignado"
-        })
-    return jsonify(resultado)
+@app.route('/trabajadores/alta', methods=['POST'])
+def alta_trabajador():
+    """
+    Da de alta un nuevo trabajador (médico, enfermero o auxiliar).
 
-# Endpoint para listar todos los trabajadores clasificados por tipo
+    Devuelve
+    --------
+    jsonify
+        Mensaje de confirmación o error.
+    """
+    data = request.json
+    rol = data.get('rol')
+
+    try:
+        if rol == 'medico':
+            trabajador = Medico(**data)
+            medicos[trabajador.id] = trabajador
+        elif rol == 'enfermero':
+            trabajador = Enfermero(**data)
+            enfermeros[trabajador.id] = trabajador
+        elif rol == 'auxiliar':
+            trabajador = Auxiliar(**data)
+            auxiliares[trabajador.id] = trabajador
+        else:
+            return jsonify({"error": "Rol no válido"}), 400
+        return jsonify({"mensaje": f"Trabajador {trabajador.nombre} {trabajador.apellido} dado de alta."})
+    except Exception as e:
+        return jsonify({"error": f"Error al dar de alta al trabajador: {str(e)}"}), 400
+
+@app.route('/trabajadores/baja/<id_trabajador>', methods=['DELETE'])
+def baja_trabajador(id_trabajador: str):
+    """
+    Da de baja a un trabajador por su ID.
+
+    Parámetros
+    ----------
+    id_trabajador : str
+        Identificador del trabajador.
+
+    Devuelve
+    --------
+    jsonify
+        Mensaje de confirmación o error.
+    """
+    if id_trabajador in medicos:
+        del medicos[id_trabajador]
+    elif id_trabajador in enfermeros:
+        del enfermeros[id_trabajador]
+    elif id_trabajador in auxiliares:
+        del auxiliares[id_trabajador]
+    else:
+        return jsonify({"error": "Trabajador no encontrado"}), 404
+    return jsonify({"mensaje": f"Trabajador con ID {id_trabajador} dado de baja."})
+
 @app.route('/trabajadores', methods=['GET'])
 def listar_trabajadores():
+    """
+    Lista todos los trabajadores clasificados por tipo.
+
+    Devuelve
+    --------
+    jsonify
+        Lista de trabajadores.
+    """
     return jsonify({
-        'medicos': [str(m) for m in medicos.values()],
-        'enfermeros': [str(e) for e in enfermeros.values()],
-        'auxiliares': [str(a) for a in auxiliares.values()]
+        "medicos": [str(m) for m in medicos.values()],
+        "enfermeros": [str(e) for e in enfermeros.values()],
+        "auxiliares": [str(a) for a in auxiliares.values()]
     })
 
-# Iniciamos la aplicación web en modo desarrollo
-if __name__ == '__main__':
-    app.run(debug=True)
+@app.route("/paciente/descargar_pdf", methods=["GET"])
+@requiere_autenticacion
+def descargar_pdf(usuario):
+    """
+    Genera un PDF con la información del paciente autenticado.
+
+    Parámetros
+    ----------
+    usuario : object
+        Objeto con el rol del usuario autenticado.
+
+    Devuelve
+    --------
+    jsonify
+        Mensaje con el nombre del PDF generado o error.
+    """
+    if usuario.rol != "paciente":
+        return jsonify({"detail": "Acceso denegado"}), 403
+
+    try:
+        nombre_pdf = generar_pdf_paciente(usuario)
+        return jsonify({"message": f"PDF generado: {nombre_pdf}"}), 200
+    except Exception as e:
+        return jsonify({"error": f"Error al generar el PDF: {str(e)}"}), 500
+
+# === Endpoint de Prueba ===
+@app.route("/test", methods=["GET"])
+def test():
+    """Endpoint de prueba para verificar que la API está funcionando."""
+    return jsonify({"mensaje": "API funcionando correctamente"}), 200
+
+# === Iniciar la Aplicación ===
+if __name__ == "__main__":
+    app.run(debug=True, port=5000)

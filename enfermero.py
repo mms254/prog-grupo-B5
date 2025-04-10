@@ -45,7 +45,7 @@ class Enfermero(Trabajador):
     def __init__(self, id: str, nombre: str, apellido: str, edad: int, genero: str,
                  turno: str, horas: int, salario: float, especialidad: str,
                  antiguedad: int, username: str, password: str):
-        super().__init__(id, nombre, apellido, edad, genero, turno, horas, salario)
+        super().__init__(id, nombre, apellido, edad, genero, turno, horas, salario, str, str)
         self.especialidad = especialidad
         self.antiguedad = antiguedad
         self.salario = self.calculo_salario()

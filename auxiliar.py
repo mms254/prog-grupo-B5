@@ -78,7 +78,7 @@ class Auxiliar(Trabajador):
         ValueError
             Si el ID no empieza por 'AUX'.
         '''
-        super().__init__(id, nombre, apellido, edad, genero, turno, horas, salario)
+        super().__init__(id, nombre, apellido, edad, genero, turno, horas, salario, str, str)
         self.enfermero_asignado = enfermero_asignado
         self.antiguedad = antiguedad
         if not id.startswith('AUX'):

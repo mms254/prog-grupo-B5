@@ -75,7 +75,7 @@ class Paramedico(Trabajador):
         ValueError
             Si el id no empieza con 'PAR'.
         '''
-        super().__init__(id, nombre, apellido, edad, genero, turno, horas, salario)
+        super().__init__(id, nombre, apellido, edad, genero, turno, horas, salario, str, str)
         self.especialidad = especialidad
         self.antiguedad = antiguedad
         self.ambulancia_asignada = None

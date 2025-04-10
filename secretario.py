@@ -82,7 +82,7 @@ class Secretario(Trabajador, Documento):
         departamento : str
             El departamento al que pertenece el secretario.
         '''
-        Trabajador.__init__(self, id, nombre, apellido, edad, genero, turno, horas, salario)
+        Trabajador.__init__(self, id, nombre, apellido, edad, genero, turno, horas, salario, str, str)
         Documento.__init__(self, titulo, descripcion)
         self.antiguedad = antiguedad
         self.email = email
