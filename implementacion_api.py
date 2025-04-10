@@ -60,4 +60,4 @@ def obtener_informacion(medicamento: str) -> None:
     except requests.exceptions.RequestException as error: #este error ocurre cuando no se puede completar la solicitud con el "https"
         print(f'No se puede completar su solicitud: {error}')
 
-#Aquí para el menú hay que poner solicitar un medicamento
+#Aquí para el menú hay que poner solicitar un medicamento.

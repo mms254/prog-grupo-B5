@@ -1,6 +1,6 @@
 """
 Estas funciones pretenden servir para la recomendación de medicamentos a pacientes sin tener que tomar cita con un médico previamente.
-Debemos importar las clases Paciente y Medicamento para poder comprobar correctamente la compatibilidad
+Debemos importar las clases Paciente y Medicamento para poder comprobar correctamente la compatibilidad.
 """
 from typing import Union
 from medicamento import Medicamento
