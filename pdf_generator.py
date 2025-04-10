@@ -3,9 +3,10 @@ from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
 from paciente import Paciente  # Importamos la clase Paciente para tipado
 
+
 def generar_pdf_paciente(paciente: Paciente) -> str:
 
-    nombre_archivo = f"informe_{paciente.username}.pdf"
+    nombre_archivo = f"Informe del Paciente_{paciente.id, paciente.nombre, paciente.apellido}.pdf"
     c = canvas.Canvas(nombre_archivo, pagesize=letter)
     width, height = letter
 
@@ -20,7 +21,13 @@ def generar_pdf_paciente(paciente: Paciente) -> str:
     y -= 20
     c.drawString(100, y, f"Edad: {paciente.edad}")
     y -= 20
-    c.drawString(100, y, f"Username: {paciente.username}")
+    c.drawString(100, y, f"Médico Asignado: {paciente.medico_asignado}")
+    y -= 20
+    c.drawString(100, y, f"Enfermedades: {paciente.enfermedades}")
+    y -= 20
+    c.drawString(100, y, f"Tipo de Prioridad en Urgencias: {paciente.prioridad_urgencias}")
+    y -= 20
+    c.drawString(100, y, f"Habitación Asignada: {paciente.habitacion_asginada}")
 
     # Historial médico
     y -= 40
@@ -44,7 +51,7 @@ def generar_pdf_paciente(paciente: Paciente) -> str:
     y -= 20
     if paciente.citas:
         for cita in paciente.citas:
-            c.drawString(100, y, f"Fecha: {cita.fecha_hora}, Médico: {cita.medico_username}, Motivo: {cita.motivo}")
+            c.drawString(100, y, f"Fecha: {cita.fecha_hora}, Médico: {cita.medico}, Motivo: {cita.motivo}")
             y -= 20
     else:
         c.drawString(100, y, "No hay citas programadas.")

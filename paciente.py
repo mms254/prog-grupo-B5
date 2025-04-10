@@ -1,3 +1,5 @@
+from typing import List
+
 from persona import Persona
 from citas import Cita
 class Paciente(Persona):

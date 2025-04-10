@@ -28,8 +28,8 @@ class Cita(ABC):
 
     def to_dict(self):
         return {
-            "paciente_username": self.paciente_username,
-            "medico_username": self.medico_username,
+            "paciente": self.paciente,
+            "medic": self.medico,
             "fecha_hora": self.fecha_hora,
             "motivo": self.motivo
         }
