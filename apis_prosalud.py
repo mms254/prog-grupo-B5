@@ -183,6 +183,10 @@ from enfermero import Enfermero
 from auxiliar import Auxiliar
 from paciente import Paciente
 from habitacion import Habitacion
+from typing import List, Dict, Tuple, Any, Union
+from persona import Persona
+from pdf_generator import generar_pdf_paciente
+
 
 # Creamos la aplicación Flask
 app = Flask(__name__)
@@ -192,7 +196,81 @@ pacientes = {}
 medicos = {}
 enfermeros = {}
 auxiliares = {}
+@app.route("/menu", methods=["GET"])
+def menu_usuario(usuario: Persona) -> Tuple[Dict[str, Any], int]:
+    """Devuelve el menú de opciones según el rol del usuario autenticado.
 
+    Este endpoint devuelve un menú con las opciones disponibles para el usuario autenticado,
+    dependiendo de su rol (paciente, médico o enfermero). Requiere autenticación básica HTTP.
+
+    Args:
+        usuario (Persona): El usuario autenticado, inyectado por el decorador @requiere_autenticacion.
+                          Debe ser un objeto de tipo Persona (o una subclase como Paciente, Medico o Enfermero).
+
+    Returns:
+        Tuple[Dict[str, Any], int]: Una tupla que contiene:
+            - Un diccionario JSON con el rol del usuario y una lista de opciones del menú.
+            - Un código de estado HTTP (200 si es exitoso, 403 si el rol no es reconocido).
+
+    Raises:
+        None: Este endpoint no lanza excepciones explícitas, pero puede fallar si el decorador
+              @requiere_autenticacion no inyecta un usuario válido.
+
+    Example:
+        GET /menu
+        Headers: Authorization: Basic <username:password>
+        Response (para un paciente):
+            {
+                "rol": "paciente",
+                "menu": [
+                    "1. Ver información personal",
+                    "2. Pedir cita",
+                    "3. Descargar información en PDF",
+                    "4. Recomendar medicamento según síntomas",
+                    "5. Ver citas",
+                    "6. Salir"
+                ]
+            }
+        Status: 200
+
+        Response (error):
+            {
+                "detail": "Rol no reconocido"
+            }
+        Status: 403
+    """
+    if usuario.rol == "paciente":
+        menu: List[str] = [
+            "1. Ver información personal",
+            "2. Pedir cita",
+            "3. Descargar información en PDF",
+            "4. Recomendar medicamento según síntomas",
+            "5. Ver citas",
+            "6. Salir"
+        ]
+        return jsonify({"rol": "paciente", "menu": menu}), 200
+    elif usuario.rol == "medico":
+        menu: List[str] = [
+            "1. Ver lista de pacientes",
+            "2. Ver citas",
+            "3. Agregar entrada al historial médico de un paciente",
+            "4. Salir"
+        ]
+        return jsonify({"rol": "medico", "menu": menu}), 200
+    elif usuario.rol == "enfermero":
+        menu: List[str] = [
+            "1. Ver habitaciones asignadas",
+            "2. Asignar paciente a habitación",
+            "3. Limpiar habitación",
+            "4. Ver pacientes asignados",
+            "5. Agregar nueva habitación",
+            "6. Asignar habitación a este enfermero",
+            "7. Eliminar paciente de habitación",
+            "8. Salir"
+        ]
+        return jsonify({"rol": "enfermero", "menu": menu}), 200
+    else:
+        return jsonify({"detail": "Rol no reconocido"}), 403
 # Endpoint para dar de alta un paciente
 # 1) Recibimos datos por JSON
 # 2) Creamos un objeto Paciente
@@ -212,6 +290,13 @@ def baja_paciente(id_paciente):
         return jsonify({'mensaje': f'Paciente con ID {id_paciente} dado de baja.'})
     return jsonify({'error': 'Paciente no encontrado'}), 404
 
+@app.route("/paciente/descargar_pdf", methods=["GET"])
+def descargar_pdf(usuario):
+    if usuario.rol != "paciente":
+        return jsonify({"detail": "Acceso denegado"}), 403
+
+    nombre_pdf = generar_pdf_paciente(usuario)
+    return jsonify({"message": f"PDF generado: {nombre_pdf}"}), 200
 # Endpoint para dar de alta un trabajador (médico, enfermero, auxiliar)
 @app.route('/trabajadores/alta', methods=['POST'])
 def alta_trabajador():
