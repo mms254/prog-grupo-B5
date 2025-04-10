@@ -61,3 +61,131 @@ def obtener_informacion(medicamento: str) -> None:
         print(f'No se puede completar su solicitud: {error}')
 
 #Aquí para el menú hay que poner solicitar un medicamento.
+
+# api para la gestión de usuarios 
+# Creamos una API REST para la gestión de usuarios (pacientes y trabajadores)
+# Utilizamos Flask para implementar los endpoints necesarios
+# Mantenemos la lógica original de la clase GestionUsuarios
+
+from flask import Flask, request, jsonify
+from medico import Medico
+from enfermero import Enfermero
+from auxiliar import Auxiliar
+from paciente import Paciente
+from habitacion import Habitacion
+
+# Creamos la aplicación Flask
+app = Flask(__name__)
+
+# Diccionarios para almacenar los datos de pacientes y trabajadores
+pacientes = {}
+medicos = {}
+enfermeros = {}
+auxiliares = {}
+
+# Endpoint para dar de alta un paciente
+# 1) Recibimos datos por JSON
+# 2) Creamos un objeto Paciente
+# 3) Lo guardamos en el diccionario
+@app.route('/pacientes/alta', methods=['POST'])
+def alta_paciente():
+    data = request.json
+    paciente = Paciente(**data)
+    pacientes[paciente.id] = paciente
+    return jsonify({'mensaje': f'Paciente {paciente.nombre} {paciente.apellido} dado de alta.'})
+
+# Endpoint para dar de baja a un paciente según su ID
+@app.route('/pacientes/baja/<id_paciente>', methods=['DELETE'])
+def baja_paciente(id_paciente):
+    if id_paciente in pacientes:
+        del pacientes[id_paciente]
+        return jsonify({'mensaje': f'Paciente con ID {id_paciente} dado de baja.'})
+    return jsonify({'error': 'Paciente no encontrado'}), 404
+
+# Endpoint para dar de alta un trabajador (médico, enfermero, auxiliar)
+@app.route('/trabajadores/alta', methods=['POST'])
+def alta_trabajador():
+    data = request.json
+    rol = data.get('rol')
+    if rol == 'medico':
+        trabajador = Medico(**data)
+        medicos[trabajador.id] = trabajador
+    elif rol == 'enfermero':
+        trabajador = Enfermero(**data)
+        enfermeros[trabajador.id] = trabajador
+    elif rol == 'auxiliar':
+        trabajador = Auxiliar(**data)
+        auxiliares[trabajador.id] = trabajador
+    else:
+        return jsonify({'error': 'Rol no válido'}), 400
+    return jsonify({'mensaje': f'Trabajador {trabajador.nombre} {trabajador.apellido} dado de alta.'})
+
+# Endpoint para dar de baja a un trabajador según su ID
+@app.route('/trabajadores/baja/<id_trabajador>', methods=['DELETE'])
+def baja_trabajador(id_trabajador):
+    if id_trabajador in medicos:
+        del medicos[id_trabajador]
+    elif id_trabajador in enfermeros:
+        del enfermeros[id_trabajador]
+    elif id_trabajador in auxiliares:
+        del auxiliares[id_trabajador]
+    else:
+        return jsonify({'error': 'Trabajador no encontrado'}), 404
+    return jsonify({'mensaje': f'Trabajador con ID {id_trabajador} dado de baja.'})
+
+# Endpoint para asignar un médico a un paciente
+@app.route('/pacientes/asignar_medico', methods=['POST'])
+def asignar_medico_paciente():
+    data = request.json
+    id_paciente = data.get('id_paciente')
+    id_medico = data.get('id_medico')
+
+    paciente = pacientes.get(id_paciente)
+    medico = medicos.get(id_medico)
+
+    if not paciente or not medico:
+        return jsonify({'error': 'Paciente o médico no encontrado'}), 404
+
+    paciente.medico_asignado = medico
+    return jsonify({'mensaje': f'Paciente {paciente.nombre} asignado a médico {medico.nombre}.'})
+
+# Endpoint para asignar una habitación a un paciente
+@app.route('/pacientes/asignar_habitacion', methods=['POST'])
+def asignar_habitacion_paciente():
+    data = request.json
+    id_paciente = data.get('id_paciente')
+    numero_habitacion = data.get('numero')
+
+    paciente = pacientes.get(id_paciente)
+    if not paciente:
+        return jsonify({'error': 'Paciente no encontrado'}), 404
+
+    habitacion = Habitacion(numero=numero_habitacion)
+    paciente.habitacion_asignada = habitacion
+    return jsonify({'mensaje': f'Paciente {paciente.nombre} asignado a la habitación {habitacion.numero}.'})
+
+# Endpoint para listar todos los pacientes activos
+@app.route('/pacientes', methods=['GET'])
+def listar_pacientes():
+    resultado = []
+    for p in pacientes.values():
+        resultado.append({
+            'nombre': p.nombre,
+            'apellido': p.apellido,
+            'estado': p.estado,
+            'medico_asignado': p.medico_asignado.nombre if p.medico_asignado else "No asignado"
+        })
+    return jsonify(resultado)
+
+# Endpoint para listar todos los trabajadores clasificados por tipo
+@app.route('/trabajadores', methods=['GET'])
+def listar_trabajadores():
+    return jsonify({
+        'medicos': [str(m) for m in medicos.values()],
+        'enfermeros': [str(e) for e in enfermeros.values()],
+        'auxiliares': [str(a) for a in auxiliares.values()]
+    })
+
+# Iniciamos la aplicación web en modo desarrollo
+if __name__ == '__main__':
+    app.run(debug=True)
