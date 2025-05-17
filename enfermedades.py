@@ -1,4 +1,4 @@
-from paciente import paciente3, paciente7
+from paciente import Paciente
 class Enfermedad:
     '''
     Clase que representa una enfermedad, con atributos como el nombre, los síntomas, la condición de crónica,
@@ -121,18 +121,4 @@ class Enfermedad:
             listado.append(str(paciente))
         return listado
 
-
-# Objetos
-enfermedad1 = Enfermedad(nombre='Gripe', sintomas='Fiebre, tos, dolor de cabeza, malestar general')
-enfermedad2 = Enfermedad(nombre='Neumonía', sintomas='Tos persistente, fiebre alta, dificultad para respirar')
-enfermedad3 = Enfermedad(nombre='Clamidia', sintomas='Ardor al orinar')
-enfermedad4 = Enfermedad(nombre='Diabetes', sintomas='Aumento de la sed, hambre, orina frecuente', cronica=True)
-enfermedad5 = Enfermedad(nombre='Migraña', sintomas='Dolor de cabeza intenso, náuseas, sensibilidad a la luz')
-
-enfermedad2.marcar_grave()
-enfermedad3.marcar_grave()
-enfermedad1.paciente_tiene_enfermedad(paciente3)
-enfermedad1.paciente_tiene_enfermedad(paciente7)
-print(enfermedad1.listado_pacientes())
-print(f'Pacientes con la enfermedad {enfermedad1.nombre}: {enfermedad1.listado_pacientes()}')
 

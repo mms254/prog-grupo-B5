@@ -1,6 +1,4 @@
-from enfermero import enfermero1
-from enfermero import enfermero5
-from enfermero import enfermero3
+from enfermero import Enfermero
 from trabajador import Trabajador
 
 class Auxiliar(Trabajador):
@@ -157,72 +155,3 @@ class Auxiliar(Trabajador):
         print(f'El enfermero {enfermero.nombre} se ha asignado correctamente al auxiliar {self.nombre}')
 
 
-# Ejemplos de objetos `Auxiliar`
-auxiliar1 = Auxiliar(
-    id='AUX001',
-    nombre='Claudia',
-    apellido='Mora',
-    edad=28,
-    genero='Femenino',
-    turno='Mañana',
-    horas=35,
-    salario=1200,
-    enfermero_asignado=None,
-    antiguedad=1
-)
-
-auxiliar2 = Auxiliar(
-    id='AUX002',
-    nombre='Carlos',
-    apellido='Ramírez',
-    edad=40,
-    genero='Masculino',
-    turno='Tarde',
-    horas=40,
-    salario=1300,
-    enfermero_asignado=enfermero1,
-    antiguedad=5
-)
-
-auxiliar3 = Auxiliar(
-    id='AUX003',
-    nombre='Lucía',
-    apellido='Delgado',
-    edad=33,
-    genero='Femenino',
-    turno='Noche',
-    horas=38,
-    salario=1250,
-    enfermero_asignado=enfermero5,
-    antiguedad=10
-)
-
-auxiliar4 = Auxiliar(
-    id='AUX004',
-    nombre='Javier',
-    apellido='Gómez',
-    edad=45,
-    genero='Masculino',
-    turno='Noche',
-    horas=36,
-    salario=1350,
-    enfermero_asignado=None,
-    antiguedad=13
-)
-
-auxiliar5 = Auxiliar(
-    id='AUX005',
-    nombre='Marina',
-    apellido='López',
-    edad=29,
-    genero='Femenino',
-    turno='Mañana',
-    horas=30,
-    salario=1100,
-    enfermero_asignado=None,
-    antiguedad=0
-)
-
-# Asignación de enfermero
-print(auxiliar2.enfermero_asignado)
-auxiliar2.asignar_enfermero(enfermero3)

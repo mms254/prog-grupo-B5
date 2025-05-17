@@ -1,8 +1,6 @@
 # enfermero.py
 from trabajador import Trabajador
-from paciente import paciente1
-from paciente import paciente2
-from paciente import paciente4
+from paciente import Paciente
 class Enfermero(Trabajador):
     '''
     Clase que representa a un enfermero del sistema hospitalario. Hereda de la clase Trabajador y añade
@@ -176,85 +174,5 @@ def __str__(self) -> str:
         return (f'ID: {self.id} - Nombre: {self.nombre} - Apellido: {self.apellido} - Edad: {self.edad} - Género: {self.genero} - Turno: {self.turno} '
                 f'- Horas: {self.horas} - Especialidad: {self.especialidad} - Salario: {self.salario} - Antiguedad: {self.antiguedad}')
 
-# Creación de objetos Enfermero con sus atributos
-enfermero1 = Enfermero(
-    id="ENF001",
-    nombre="Juan",
-    apellido="Pérez",
-    edad=35,
-    genero="Masculino",
-    turno="mañana",
-    horas=40,
-    salario=1800,
-    especialidad="UCI",
-    antiguedad=6,
-    username='juan.perez',
-    password='passjuan'
-)
 
-enfermero2 = Enfermero(
-    id="ENF002",
-    nombre="María",
-    apellido="García",
-    edad=30,
-    genero="Femenino",
-    turno="tarde",
-    horas=38,
-    salario=1750,
-    especialidad="Pediatría",
-    antiguedad=3,
-    username='maria.garcia',
-    password='passmaria'
-)
-
-enfermero3 = Enfermero(
-    id="ENF003",
-    nombre="Pedro",
-    apellido="López",
-    edad=45,
-    genero="Masculino",
-    turno="noche",
-    horas=42,
-    salario=1900,
-    especialidad="Urgencias",
-    antiguedad=10,
-    username='pedro.lopez',
-    password='passpedro'
-)
-
-enfermero4 = Enfermero(
-    id="ENF004",
-    nombre="Laura",
-    apellido="Martínez",
-    edad=29,
-    genero="Femenino",
-    turno="mañana",
-    horas=36,
-    salario=1600,
-    especialidad="Oncología",
-    antiguedad=1,
-    username='laura.martinez',
-    password='passlaura'
-)
-
-enfermero5 = Enfermero(
-    id="ENF005",
-    nombre="Andrés",
-    apellido="Sánchez",
-    edad=50,
-    genero="Masculino",
-    turno="noche",
-    horas=40,
-    salario=2000,
-    especialidad="Reanimación",
-    antiguedad=14,
-    username='andres.sanchez',
-    password='passandres'
-)
-
-enfermero1.asignar_paciente(paciente4)
-enfermero2.asignar_paciente(paciente2)
-enfermero2.asignar_paciente(paciente1)
-
-print(enfermero2.mostrar_pacientes())
 

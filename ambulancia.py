@@ -1,5 +1,4 @@
-from paramedico import paramedico3
-from paramedico import paramedico4
+from paramedico import Paramedico
 class Ambulancia:
     '''
     Clase que representa una ambulancia dentro del sistema hospitalario.
@@ -141,31 +140,3 @@ class Ambulancia:
             paramedico_info = 'Ninguno'
         return f'Ambulancia {self.matricula} - Zona: {self.zona} - Modelo: {self.modelo} - Sirena: {self.sirena} - Paramedicos {paramedico_info}'
 
-
-# Objetos:
-# Ambulancia 1
-ambulancia1 = Ambulancia(
-    matricula='A-1234-BC',
-    zona='Centro',
-    modelo='Mercedes-Benz Sprinter',
-    sirena='bitonal'
-)
-
-# Ambulancia 2
-ambulancia2 = Ambulancia(
-    matricula='B-5678-DE',
-    zona='Norte',
-    modelo='Ford Transit',
-    sirena='secuencial'
-)
-
-# Ambulancia 3
-ambulancia3 = Ambulancia(
-    matricula='C-9012-FG',
-    zona='Sur',
-    modelo='Peugeot Boxer',
-    sirena='ninoninoni'
-)
-ambulancia2.agregar_paramedico(paramedico4)
-ambulancia2.agregar_paramedico(paramedico3)
-print (ambulancia2)

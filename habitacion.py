@@ -1,6 +1,4 @@
-from paciente import paciente10
-from paciente import paciente11
-from paciente import paciente5
+from paciente import Paciente
 class Habitacion:
     def __init__(self, numero_habitacion, capacidad, limpia=False):
         self.numero_habitacion = numero_habitacion
@@ -41,14 +39,3 @@ class Habitacion:
         else:
             print(f'Paciente {paciente.nombre} no está en la habitación {self.numero_habitacion}.')
 
-habitacion1 = Habitacion(99, 4)
-habitacion2 = Habitacion(54, 1)
-habitacion3 = Habitacion(109, 2)
-habitacion4 = Habitacion(90, 3)
-habitacion5 = Habitacion(190, 10)
-
-habitacion2.limpiar()
-habitacion4.añadir_pacientes(paciente11)
-habitacion4.añadir_pacientes(paciente10)
-print(habitacion4.obtener_info())
-habitacion4.eliminar_paciente(paciente10)

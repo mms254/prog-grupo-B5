@@ -1,6 +1,6 @@
 from trabajador import Trabajador
-from paciente import paciente10, paciente6, paciente1
-
+# medico.py
+from paciente import Paciente # Importa la CLASE Paciente
 class Medico(Trabajador):
     '''
     Representa a un médico del sistema sanitario.
@@ -175,92 +175,4 @@ def __str__(self) -> str:
             f'ID: {self.id} - Nombre: {self.nombre} - Apellido {self.apellido} - Edad {self.edad} - Género {self.genero} - Turno: {self.turno} - '
             f'Horas: {self.horas} - Especialidad: {self.especialidad} - Salario: {self.salario} - Antiguedad: {self.antiguedad}'
         )
-
-# Creación de objetos Medico con sus atributos
-medico1 = Medico(
-    id='MED001',
-    username='juanmed',
-    password='1234',
-    nombre='Juan',
-    apellido='Pérez',
-    edad=45,
-    genero='Masculino',
-    turno='Día',
-    horas=40,
-    salario=3000.00,
-    especialidad='Cardiología',
-    antiguedad=12
-)
-
-medico2 = Medico(
-    id='MED002',
-    username='anamed',
-    password='abcd',
-    nombre='Ana',
-    apellido='Gómez',
-    edad=38,
-    genero='Femenino',
-    turno='Noche',
-    horas=36,
-    salario=2800.00,
-    especialidad='Pediatría',
-    antiguedad=6
-)
-
-medico3 = Medico(
-    id='MED003',
-    username='carlosneu',
-    password='neu123',
-    nombre='Carlos',
-    apellido='Martínez',
-    edad=50,
-    genero='Masculino',
-    turno='Día',
-    horas=42,
-    salario=3500.00,
-    especialidad='Neurología',
-    antiguedad=15
-)
-
-medico4 = Medico(
-    id='MED004',
-    username='marialop',
-    password='mlop456',
-    nombre='María',
-    apellido='Lopez',
-    edad=40,
-    genero='Femenino',
-    turno='Día',
-    horas=38,
-    salario=3100.00,
-    especialidad='Traumatología',
-    antiguedad=8
-)
-
-medico5 = Medico(
-    id='MED005',
-    username='luissan',
-    password='ls123',
-    nombre='Luis',
-    apellido='Sánchez',
-    edad=35,
-    genero='Masculino',
-    turno='Noche',
-    horas=40,
-    salario=2900.00,
-    especialidad='Dermatología',
-    antiguedad=4
-)
-
-print(medico1)
-print(medico2)
-print(medico3)
-print(medico4)
-print(medico5)
-
-medico1.asignar_paciente(paciente10)
-medico1.asignar_paciente(paciente6)
-medico5.asignar_paciente(paciente1)
-
-print(medico1.obtener_historial_pacientes(paciente10))
 
