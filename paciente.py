@@ -63,19 +63,26 @@ class Paciente(Persona):
         Devuelve un diccionario con los atributos del paciente.
     '''
 
-    def __init__(self, id,username, password, nombre, apellido, edad, genero, estado, medico_asignado=None, enfermero_asignado = None, habitacion_asginada = None, historial_medico: List[str] = None):
-        super().__init__(id, nombre, apellido, edad, genero, 'paciente')
+    # paciente.py
+    class Paciente:
+        def __init__(self, id, nombre, apellido, dni, telefono, email, direccion, historial_medico=None, citas=None,
+                     estado="activo", medico_asignado=None, habitacion_asignada=None, rol="paciente"):
+            self.id = id
+            self.nombre = nombre
+            self.apellido = apellido
+            self.dni = dni  # <--- Asegúrate de que estos campos estén
+            self.telefono = telefono  # <--- como parámetros en __init__
+            self.email = email
+            self.direccion = direccion
+            self.historial_medico = historial_medico if historial_medico is not None else []
+            self.citas = citas if citas is not None else []
+            self.estado = estado
+            self.medico_asignado = medico_asignado
+            self.habitacion_asignada = habitacion_asignada
+            self.rol = rol
 
-        self.username = username
-        self.password = password
-        self.estado = estado
-        self.medico_asignado = medico_asignado
-        self.enfermero_asignado = enfermero_asignado
-        self.habitacion_asginada = habitacion_asginada
-        self.enfermedades = []
-        self.prioridad_urgencias = 0
-        self.historial_medico = historial_medico if historial_medico is not None else []
-        self.citas: List[Cita] = []
+        def __str__(self):
+            return f"Paciente: {self.nombre} {self.apellido}"
 
     def asignar_medico(self, medico):
         '''

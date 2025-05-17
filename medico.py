@@ -25,9 +25,11 @@ class Medico(Trabajador):
         Salario ajustado en base a antigüedad y turno.
     '''
 
-def __init__(self, id: str, username: str, password: str, nombre: str, apellido: str, edad: int, genero: str,
-                 turno: str, horas: int, salario: float, especialidad: str, antiguedad: int, contratacion=None):
 
+def __init__(self, id: str, nombre: str, apellido: str, especialidad: str,
+             username: str = None, password: str = None,  # Hacer opcionales o requerirlos en la prueba
+             edad: int = None, genero: str = None, antiguedad: int = 0):
+    # Hacer opcionales
     '''
         Inicializa un objeto Medico con los datos proporcionados y ajusta el salario según la experiencia.
 
@@ -63,17 +65,15 @@ def __init__(self, id: str, username: str, password: str, nombre: str, apellido:
         ValueError
             Si el ID no comienza por 'MED'.
     '''
-
-
-
-    super().__init__(id, nombre, apellido, edad, genero, turno, contratacion, horas, salario)
+    super().__init__(id=id, nombre=nombre, apellido=apellido, edad=edad, genero=genero)
 
     self.username = username
-    self.password = password
+    self.password = password # Considerar hashear la contraseña
     self.especialidad = especialidad
     self.antiguedad = antiguedad
     self.pacientes_asignados = []
-    self.salario = self.calculo_salario()
+    self.salario = self.calculo_salario_medico() # Renombrar si hay diferentes cálculos
+
     if not id.startswith('MED'):
         raise ValueError('ID inválido, el ID debe empezar por MED')
 
