@@ -13,7 +13,7 @@ from flask import Flask, request, jsonify
 from functools import wraps
 import requests
 import uuid
-from typing import Dict, Any
+from typing import Dict, Any, List
 
 from auxiliar import Auxiliar
 from enfermero import Enfermero
@@ -58,19 +58,35 @@ def requiere_autenticacion(f):
         if not auth or not auth.username or not auth.password:
             return jsonify({"detail": "Autenticación requerida. Proporcione usuario y contraseña."}), 401
 
-        # Buscar el usuario en el diccionario de usuarios registrados
         usuario = usuarios_registrados.get(auth.username)
+        if not usuario:
+            return jsonify({"detail": "Usuario no encontrado"}), 401
+        
+        # Verificar si el usuario existe en su diccionario correspondiente
+        if usuario["rol"] == "paciente" and auth.username not in pacientes:
+            return jsonify({"detail": "Paciente no registrado"}), 401
+        elif usuario["rol"] == "medico" and auth.username not in medicos:
+            return jsonify({"detail": "Médico no registrado"}), 401
+        elif usuario["rol"] == "enfermero" and auth.username not in enfermeros:
+            return jsonify({"detail": "Enfermero no registrado"}), 401
+        
+        if usuario["password"] != auth.password:
+            return jsonify({"detail": "Contraseña incorrecta"}), 401
+        
+        # Buscar el usuario en el diccionario de usuarios registrados
+        """usuario = usuarios_registrados.get(auth.username)
         if not usuario:
             return jsonify({"detail": "Usuario no encontrado."}), 401
 
         # Verificar la contraseña
         if usuario["password"] != auth.password:
-            return jsonify({"detail": "Contraseña incorrecta."}), 401
+            return jsonify({"detail": "Contraseña incorrecta."}), 401""" 
 
         # Crear un objeto usuario con el rol
         class UsuarioTemporal:
             def __init__(self, rol):
                 self.rol = rol
+                self.username = auth.username
 
         usuario_obj = UsuarioTemporal(usuario["rol"])
         return f(usuario_obj, *args, **kwargs)
@@ -246,7 +262,7 @@ def menu_usuario(usuario):
         return jsonify({"detail": "Rol no reconocido"}), 403
 
 @app.route('/pacientes', methods=['GET'])
-def listar_pacientes():
+def listar_pacientes() -> List[Dict[str, Any]]:
     """
     Lista todos los pacientes activos.
 
@@ -261,7 +277,7 @@ def listar_pacientes():
             "nombre": p.nombre,
             "apellido": p.apellido,
             "estado": p.estado,
-            "medico_asignado": p.medico_asignado.nombre if p.medico_asignado else "No asignado"
+            "medico_asignado": p.medico_asignado.nombre if hasattr(p, 'medico_asignado') and p.medico_asignado else "No asignado"
         })
     return jsonify(resultado)
 
@@ -343,7 +359,6 @@ def asignar_habitacion_paciente():
     paciente = pacientes.get(id_paciente)
     if not paciente:
         return jsonify({"error": "Paciente no encontrado"}), 404
-
 
     habitacion = Habitacion(numero=numero_habitacion)
     paciente.habitacion_asignada = habitacion
@@ -437,12 +452,26 @@ def descargar_pdf(usuario):
     """
     if usuario.rol != "paciente":
         return jsonify({"detail": "Acceso denegado"}), 403
+    
+    # Obtener el ID del paciente desde el nombre de usuario 
 
-    try:
-        nombre_pdf = generar_pdf_paciente(usuario)
+    paciente_id = request.authorization.username
+    paciente = pacientes.get(paciente_id)
+
+    if not paciente: 
+        return jsonify({"error:" : "Paciente no encontrado"}), 404
+    
+    try: 
+        nombre_pdf = generar_pdf_paciente(paciente)
         return jsonify({"message": f"PDF generado: {nombre_pdf}"}), 200
     except Exception as e:
         return jsonify({"error": f"Error al generar el PDF: {str(e)}"}), 500
+
+    """try:
+        nombre_pdf = generar_pdf_paciente(usuario)
+        return jsonify({"message": f"PDF generado: {nombre_pdf}"}), 200
+    except Exception as e:
+        return jsonify({"error": f"Error al generar el PDF: {str(e)}"}), 500"""
 
 # === Endpoint de Prueba ===
 @app.route("/test", methods=["GET"])
